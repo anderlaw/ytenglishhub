@@ -1,8 +1,11 @@
 import axios from "axios";
-
 export const axiosIns = axios.create({
+    baseURL:"https://ohiv5hc3rbfckomnt4opoft7km0jdjqq.lambda-url.us-east-1.on.aws",
     //60s
-    timeout: 60 * 1000
+    timeout: 60 * 1000,
+    headers:{
+        "Content-Type":'Application/json'
+    }
 });
 // Add a request interceptor
 axiosIns.interceptors.request.use(function (config) {

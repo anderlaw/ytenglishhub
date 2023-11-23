@@ -1,11 +1,16 @@
 import { Box, Chip, Stack } from "@mui/material";
-
+import { Link } from "react-router-dom";
 import CategoryIcon from "@mui/icons-material/Category";
 import LinkIcon from "@mui/icons-material/Link";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import React from "react";
 export const NavComponent: React.FC<{
-  onMenuItemClick?: (name: "category" | "addURL" | "wordBook") => void;
-}> = ({ onMenuItemClick }) => {
+  onMenuItemClick?: (name: string) => void;
+  menus?: Array<{
+    name: string;
+    icon: JSX.Element;
+  }>;
+}> = ({ onMenuItemClick, menus }) => {
   return (
     <Box
       sx={{
@@ -16,26 +21,25 @@ export const NavComponent: React.FC<{
         height: "60px",
       }}
     >
-      <Box>Logo here</Box>
-      <Box>
-        <Stack direction="row" spacing={1}>
-          <Chip
-            onClick={() => onMenuItemClick && onMenuItemClick("category")}
-            icon={<CategoryIcon />}
-            label="分类"
-          />
-          <Chip
-            onClick={() => onMenuItemClick && onMenuItemClick("addURL")}
-            icon={<LinkIcon />}
-            label="添加"
-          />
-          <Chip
-            onClick={() => onMenuItemClick && onMenuItemClick("wordBook")}
-            icon={<MenuBookIcon />}
-            label="单词本"
-          />
-        </Stack>
-      </Box>
+      <Link to="/">Logo here</Link>
+      {menus && (
+        <Box>
+          <Stack direction="row" spacing={1}>
+            {menus.map((menuItem, index) => {
+              return (
+                <Chip
+                  key={index}
+                  onClick={() =>
+                    onMenuItemClick && onMenuItemClick(menuItem.name)
+                  }
+                  icon={menuItem.icon}
+                  label={menuItem.name}
+                />
+              );
+            })}
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 };

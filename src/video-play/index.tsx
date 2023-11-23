@@ -11,17 +11,19 @@ import NavComponent from "layouts/Nav";
 import { MainTwoComponent } from "layouts/MainTwo";
 import BookIcon from "@mui/icons-material/Book";
 import { TabComponent } from "components/Tab";
+import { singleStorage } from "utils/localStorage";
 type StateType = {
   player: any;
   subtitleEvents: Array<any>;
   tabIndex: number;
-  videoHeight:number
+  videoHeight: number;
 };
 type PropType = {};
 interface Main {
   props: PropType;
   state: StateType;
 }
+
 class Main extends Component {
   constructor(props: {} | Readonly<{}>) {
     super(props);
@@ -29,15 +31,17 @@ class Main extends Component {
       player: null,
       subtitleEvents: [],
       tabIndex: 0,
-      videoHeight:0
+      videoHeight: 0,
     };
   }
   componentDidMount() {
-    const width = parseFloat(getComputedStyle((document as any).querySelector('#left-box')).width);
-    const height = width/1.777;
+    const width = parseFloat(
+      getComputedStyle((document as any).querySelector("#left-box")).width
+    );
+    const height = width / 1.777;
     this.setState({
-      videoHeight:height
-    })
+      videoHeight: height,
+    });
     // eslint-disable-next-line no-restricted-globals
     const search = location.search.slice(1);
     let video_id = "";
@@ -56,23 +60,26 @@ class Main extends Component {
   }
   loadsubtitle(video_id: string) {
     if (video_id) {
-      /**
-       * 
-    *       axios({
-        url: `https://qrzkrv3juodyjv4yl37kobuxze0fwxoz.lambda-url.us-east-1.on.aws/?video_id=${video_id}`,
-        method: "get",
-      }).then(res => {
-        if(res.status === 200){
-          const data = res.data
-        }
-      })
-       */
-
-      setTimeout(() => {
+      const ret = singleStorage.getCaptionItem(video_id, "en");
+      if (ret.status === "success") {
         this.setState({
-          subtitleEvents: testData.events,
+          subtitleEvents: ret.data!.events,
         });
-      }, 1000);
+      } else {
+        axios({
+          url: `https://qrzkrv3juodyjv4yl37kobuxze0fwxoz.lambda-url.us-east-1.on.aws/?video_id=${video_id}`,
+          method: "get",
+        }).then((res) => {
+          if (res.status === 200 && res.data.events) {
+            this.setState({
+              subtitleEvents: res.data.events,
+            });
+            singleStorage.setUpdateCaptionItem(video_id, "en", {
+              events: res.data.events,
+            });
+          }
+        });
+      }
     } else {
       //参数错误
       console.error("错误的video_id");
@@ -119,7 +126,13 @@ class Main extends Component {
           leftSize={900}
           leftElement={
             <Box sx={{ paddingLeft: "30px" }}>
-              <div style={{width:'100%',height:`${this.state.videoHeight}px` || 'auto'}} id="player"></div>
+              <div
+                style={{
+                  width: "100%",
+                  height: `${this.state.videoHeight}px` || "auto",
+                }}
+                id="player"
+              ></div>
             </Box>
           }
           mainElementPadding="0 10px"
@@ -154,7 +167,7 @@ class Main extends Component {
                     overflowY: "auto",
                   }}
                 >
-                  {this.state.subtitleEvents.map((event: any) => {
+                  {this.state.subtitleEvents.map((event: any, index) => {
                     // const stripedWord = segItem.utf8.trim();
                     const empty =
                       !event.segs ||
@@ -163,7 +176,11 @@ class Main extends Component {
                         ? true
                         : false;
                     return empty ? null : (
-                      <Box className="sub-row" sx={{ marginBottom: "16px" }}>
+                      <Box
+                        key={index}
+                        className="sub-row"
+                        sx={{ marginBottom: "16px" }}
+                      >
                         {event.segs.map(
                           (seg: any, index: React.Key | null | undefined) => {
                             return (
@@ -195,10 +212,7 @@ class Main extends Component {
                 </Box>
               )}
               {/*  单词本  */}
-              {<Box>
-                
-                
-              </Box>}
+              {<Box></Box>}
             </Box>
           }
         />

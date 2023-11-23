@@ -11,11 +11,14 @@ import {
   Link,
   createRoutesFromElements,
   Outlet,
+  useRoutes,
 } from "react-router-dom";
 import { Box } from "@mui/material";
 import HomeComponent from "./home";
 import VideoPlayComponent from "./video-play";
 import axios from "axios";
+import { CMSComponent } from "cms";
+import { DemoComponent } from "demo";
 
 const routes = createRoutesFromElements(
   <Route path="/" element={<App />}>
@@ -24,6 +27,14 @@ const routes = createRoutesFromElements(
       path="video"
       element={<VideoPlayComponent />}
       // loader={subtitleLoader}
+    />
+    <Route 
+      path="cms"
+      element={<CMSComponent/>}
+    />
+    <Route
+      path="demo"
+      element={<DemoComponent/>}
     />
     {/* <Route element={<AuthLayout />}>
       <Route
@@ -36,7 +47,6 @@ const routes = createRoutesFromElements(
   </Route>
 );
 const router = createBrowserRouter(routes);
-
 createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <RouterProvider router={router} />
