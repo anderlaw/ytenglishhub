@@ -22,9 +22,15 @@ interface ILearningProgressData {
 }
 export type ILearningProgressStorage = Array<ILearningProgressData>
 
+export type INoteBookStorage = Array<{
+    word: string,
+    note: string,
+    update_date: string
+}>
 export class LocalStorage {
     caption_storage_key = 'yt_caption_key'
     learningProgress_storage_key = 'lern_prog_key'
+    noteBook_storage_key = 'nb_key'
     learningProgress_storage_Max = 20
     getCaptionItem(video_id: string, lang: Lang): {
         status: 'success' | 'failure',
@@ -102,7 +108,7 @@ export class LocalStorage {
             newStorageItem.play_progress_Ts = play_progress_Ts;
             newStorageItem.video_title = video_title;
             //跟第一个调换顺序
-            new_storage.splice(new_storage.indexOf(newStorageItem),1)
+            new_storage.splice(new_storage.indexOf(newStorageItem), 1)
             new_storage.unshift(newStorageItem)
         } else {
             //条目限制。
@@ -124,6 +130,53 @@ export class LocalStorage {
     getLearningProgress(): ILearningProgressStorage {
         let storage = localStorage.getItem(this.learningProgress_storage_key) as any;
         return storage ? (JSON.parse(storage) as ILearningProgressStorage) : [];
+    }
+    insertUpdateNoteBook(word: string, note?: string): {
+        status: 'success' | 'failure'
+    } {
+        if (!word) {
+            return {
+                status: 'failure'
+            }
+        }
+        /**
+        * 先取出，再写入。
+        */
+        let old_storage = localStorage.getItem(this.noteBook_storage_key) as any;
+        old_storage && (old_storage = JSON.parse(old_storage));
+
+        let new_storage: INoteBookStorage = old_storage || [];
+
+        const already_in_item = new_storage.find(item => item.word === word.toLowerCase())
+        if (already_in_item) {
+            //存在，更新
+            if (note || note === "") {
+                already_in_item.note = note;
+                already_in_item.update_date = new Date().toDateString();
+            }
+        } else {
+            //不存在，新增
+            new_storage.unshift({
+                word,
+                note: note as any,
+                update_date: new Date().toDateString()
+            })
+        }
+        localStorage.setItem(this.noteBook_storage_key, JSON.stringify(new_storage))
+        return {
+            status: 'success'
+        }
+    }
+    removeFromNoteBook(word: string) {
+        let old_storage = localStorage.getItem(this.noteBook_storage_key) as any;
+        old_storage && (old_storage = JSON.parse(old_storage));
+        if (old_storage) {
+            delete old_storage[word]
+        }
+    }
+    getNoteBook(): INoteBookStorage {
+        let storage = localStorage.getItem(this.noteBook_storage_key) as any;
+        return storage ? (JSON.parse(storage) as INoteBookStorage) : [];
     }
 }
 const getSingle = (ClassObject: new () => any) => {

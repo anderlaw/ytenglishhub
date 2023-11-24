@@ -12,6 +12,8 @@ import { MainTwoComponent } from "layouts/MainTwo";
 import BookIcon from "@mui/icons-material/Book";
 import { TabComponent } from "components/Tab";
 import { singleStorage } from "utils/localStorage";
+import { AddWordBookComponent } from "components/AddWordBookDialog";
+import { NoteBookComponent } from "components/NoteBook";
 type StateType = {
   player: any;
   subtitleEvents: Array<any>;
@@ -20,6 +22,8 @@ type StateType = {
   currentTime: number;
   curTimeTracker: any;
   learningProgressTracker: any;
+  addBookDialogOpen: boolean;
+  sentenceWithWord: string;
 };
 type PropType = {};
 interface Main {
@@ -38,6 +42,8 @@ class Main extends Component {
       currentTime: 0,
       curTimeTracker: null,
       learningProgressTracker: null,
+      addBookDialogOpen: false,
+      sentenceWithWord: "",
     };
   }
   componentDidMount() {
@@ -130,25 +136,25 @@ class Main extends Component {
               this.state.player.seekTo(oldProgressItem.play_progress_Ts / 1000);
             // event.target.playVideo();
             //启动计时器。每一秒轮训视频的播放进度
-            const timer = setInterval(() => {
-              this.setState({
-                currentTime: this.state.player.getCurrentTime() * 1000,
-              });
-            }, 1000);
+            // const timer = setInterval(() => {
+            //   this.setState({
+            //     currentTime: this.state.player.getCurrentTime() * 1000,
+            //   });
+            // }, 1000);
             //启动计时器。记录学习进度
-            const timer2 = setInterval(() => {
-              const videoData = this.state.player.getVideoData();
-              singleStorage.setLearningProgress(
-                videoData.video_id,
-                videoData.title,
-                this.state.currentTime
-              );
-            }, 5000);
+            // const timer2 = setInterval(() => {
+            //   const videoData = this.state.player.getVideoData();
+            //   singleStorage.setLearningProgress(
+            //     videoData.video_id,
+            //     videoData.title,
+            //     this.state.currentTime
+            //   );
+            // }, 5000);
             //记录timer，方便后续卸载清除
-            this.setState({
-              curTimeTracker: timer,
-              learningProgressTracker: timer2,
-            });
+            // this.setState({
+            //   curTimeTracker: timer,
+            //   learningProgressTracker: timer2,
+            // });
           },
           onStateChange: (event: any) => {
             if (event.data === window.YT.PlayerState.PLAYING) {
@@ -179,6 +185,16 @@ class Main extends Component {
   render(): ReactNode {
     return (
       <React.Fragment>
+        {/* 增加单词本的功能 */}
+        <AddWordBookComponent
+          open={this.state.addBookDialogOpen}
+          rawSentence={this.state.sentenceWithWord}
+          handleClose={() =>
+            this.setState({
+              addBookDialogOpen: false,
+            })
+          }
+        />
         <NavComponent />
         <MainTwoComponent
           leftSize={900}
@@ -275,14 +291,30 @@ class Main extends Component {
                             );
                           }
                         )}
-                        <Box className="favorite-icon" />
+                        <Box
+                          className="favorite-icon"
+                          onClick={() => {
+                            //pars sentence to word
+                            const sentence = event.segs
+                              .map((seg: { utf8: any }) => seg.utf8)
+                              .join("");
+                            this.setState({
+                              addBookDialogOpen: true,
+                              sentenceWithWord: sentence,
+                            });
+                          }}
+                        />
                       </Box>
                     );
                   })}
                 </Box>
               )}
               {/*  单词本  */}
-              {<Box></Box>}
+              {this.state.tabIndex === 1 && (
+                <Box sx={{ padding:'16px' }}>
+                  <NoteBookComponent />
+                </Box>
+              )}
             </Box>
           }
         />

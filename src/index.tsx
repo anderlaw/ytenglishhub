@@ -19,7 +19,10 @@ import VideoPlayComponent from "./video-play";
 import axios from "axios";
 import { CMSComponent } from "cms";
 import { DemoComponent } from "demo";
-
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 const routes = createRoutesFromElements(
   <Route path="/" element={<App />}>
     <Route path="/" element={<HomeComponent />} />
