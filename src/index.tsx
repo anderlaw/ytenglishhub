@@ -28,14 +28,8 @@ const routes = createRoutesFromElements(
       element={<VideoPlayComponent />}
       // loader={subtitleLoader}
     />
-    <Route 
-      path="cms"
-      element={<CMSComponent/>}
-    />
-    <Route
-      path="demo"
-      element={<DemoComponent/>}
-    />
+    <Route path="cms" element={<CMSComponent />} />
+    <Route path="demo" element={<DemoComponent />} />
     {/* <Route element={<AuthLayout />}>
       <Route
         path="login"
@@ -48,9 +42,7 @@ const routes = createRoutesFromElements(
 );
 const router = createBrowserRouter(routes);
 createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <RouterProvider router={router} />
 );
 
 // If you want to start measuring performance in your app, pass a function

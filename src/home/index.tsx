@@ -100,12 +100,12 @@ const Main: React.FC<{}> = () => {
         ]}
         onMenuItemClick={(menuName) => {
           console.log(menuName);
-          switch(menuName){
-            case '分类':
+          switch (menuName) {
+            case "分类":
               setCateDialogOpen(true);
               break;
-            case '添加':
-              setAddDialogOpen(true)
+            case "添加":
+              setAddDialogOpen(true);
           }
         }}
       />
@@ -140,7 +140,6 @@ const Main: React.FC<{}> = () => {
                         boxShadow: "unset",
                       }}
                       onClick={() => {
-                        console.log(1231231);
                         navigate(`/video?video_id=${item.video_id}`);
                       }}
                     >

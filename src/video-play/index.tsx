@@ -17,6 +17,9 @@ type StateType = {
   subtitleEvents: Array<any>;
   tabIndex: number;
   videoHeight: number;
+  currentTime: number;
+  curTimeTracker: any;
+  learningProgressTracker: any;
 };
 type PropType = {};
 interface Main {
@@ -32,30 +35,37 @@ class Main extends Component {
       subtitleEvents: [],
       tabIndex: 0,
       videoHeight: 0,
+      currentTime: 0,
+      curTimeTracker: null,
+      learningProgressTracker: null,
     };
   }
   componentDidMount() {
     const width = parseFloat(
       getComputedStyle((document as any).querySelector("#left-box")).width
     );
+    console.log("width of left--->", width);
+
     const height = width / 1.777;
     this.setState({
       videoHeight: height,
     });
-    // eslint-disable-next-line no-restricted-globals
-    const search = location.search.slice(1);
-    let video_id = "";
-    search.split("&").forEach((partial) => {
-      const item = partial.split("=");
-      const key = item[0];
-      const value = item[1];
-      if (key === "video_id") {
-        video_id = value;
+    try {
+      // eslint-disable-next-line no-restricted-globals
+      const video_id = new URL(location.href).searchParams.get("video_id");
+      if (video_id) {
+        console.log("video_id--->", video_id);
+        this.loadsubtitle(video_id);
+        this.loadVideo(video_id);
+      } else {
+        //出错
+        alert("页面参数错误2");
       }
-    });
-    if (video_id) {
-      this.loadsubtitle(video_id);
-      this.loadAPI(video_id);
+    } catch (e) {
+      //出错
+      console.log(e);
+
+      alert("页面参数错误1");
     }
   }
   loadsubtitle(video_id: string) {
@@ -85,38 +95,86 @@ class Main extends Component {
       console.error("错误的video_id");
     }
   }
-  loadAPI(video_id: string) {
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-
-    const firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode!.insertBefore(tag, firstScriptTag);
-
-    (window as any).onYouTubeIframeAPIReady = () => {
-      this.setState({
-        player: new (window as any).YT.Player("player", {
-          height: "360",
-          width: "640",
-          videoId: video_id,
-          events: {
-            onReady: (event: any) => {
-              event.target.playVideo();
-            },
-            onStateChange: (event: any) => {
-              console.log(event.data);
-              console.log((window as any).YT.PlayerState);
-              //   if (event.data == YT.PlayerState.PLAYING && !done) {
-              //     setTimeout(stopVideo, 6000);
-              //     done = true;
-              //   }
-            },
+  componentWillUnmount() {
+    console.log("destroy player------>", this.state?.player);
+    this.state?.player?.destroy();
+    console.log("destroy time tracker------>", this.state?.curTimeTracker);
+    clearInterval(this.state.curTimeTracker);
+    clearInterval(this.state.learningProgressTracker);
+  }
+  loadVideo(video_id: string) {
+    console.log("加载视频---");
+    const initPlayer = (video_id: string) => {
+      return new window.YT.Player("player", {
+        height: "360",
+        width: "640",
+        videoId: video_id,
+        playerVars: {
+          autoplay: 0,
+          modestbranding: 1,
+          enablejsapi: 1,
+          color: "white",
+          wmode: "opaque",
+          origin: "http://localhost:3000",
+        },
+        events: {
+          onReady: (event: any) => {
+            //设置到保存的视频进度值
+            const oldProgressItem = singleStorage
+              .getLearningProgress()
+              .find(
+                (item) =>
+                  item.video_id === this.state.player.getVideoData().video_id
+              );
+            oldProgressItem &&
+              this.state.player.seekTo(oldProgressItem.play_progress_Ts / 1000);
+            // event.target.playVideo();
+            //启动计时器。每一秒轮训视频的播放进度
+            const timer = setInterval(() => {
+              this.setState({
+                currentTime: this.state.player.getCurrentTime() * 1000,
+              });
+            }, 1000);
+            //启动计时器。记录学习进度
+            const timer2 = setInterval(() => {
+              const videoData = this.state.player.getVideoData();
+              singleStorage.setLearningProgress(
+                videoData.video_id,
+                videoData.title,
+                this.state.currentTime
+              );
+            }, 5000);
+            //记录timer，方便后续卸载清除
+            this.setState({
+              curTimeTracker: timer,
+              learningProgressTracker: timer2,
+            });
           },
-        }),
+          onStateChange: (event: any) => {
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              console.log(this.state.player);
+            }
+          },
+        },
       });
     };
-    // function stopVideo() {
-    //   player.stopVideo();
-    // }
+    const whenYTAPIReady = () =>
+      new Promise((res) => {
+        const timer = setInterval(() => {
+          if (window.YTIframeAPIReady) {
+            clearInterval(timer);
+            res(true);
+          }
+        }, 300);
+      });
+    whenYTAPIReady().then((res) => {
+      console.log("执行 player加载 --->");
+      const player = initPlayer(video_id);
+      console.log("player------", player);
+      this.setState({
+        player: player,
+      });
+    });
   }
   render(): ReactNode {
     return (
@@ -125,11 +183,16 @@ class Main extends Component {
         <MainTwoComponent
           leftSize={900}
           leftElement={
-            <Box sx={{ paddingLeft: "30px" }}>
+            <Box
+              sx={{
+                paddingLeft: "30px",
+                height: `${this.state.videoHeight}px` || "auto",
+              }}
+            >
               <div
                 style={{
                   width: "100%",
-                  height: `${this.state.videoHeight}px` || "auto",
+                  height: "100%",
                 }}
                 id="player"
               ></div>
@@ -175,10 +238,17 @@ class Main extends Component {
                         event.segs[0].utf8.trim() === "")
                         ? true
                         : false;
+                    const isLastOne: boolean =
+                      index === this.state.subtitleEvents.length - 1;
+                    const hightlightSub: boolean =
+                      this.state.currentTime >= event.tStartMs &&
+                      (isLastOne ||
+                        this.state.currentTime <
+                          this.state.subtitleEvents[index + 1].tStartMs);
                     return empty ? null : (
                       <Box
                         key={index}
-                        className="sub-row"
+                        className={`sub-row ${hightlightSub ? "active" : ""}`}
                         sx={{ marginBottom: "16px" }}
                       >
                         {event.segs.map(

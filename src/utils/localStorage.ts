@@ -15,8 +15,17 @@ interface ICaptionData {
         }>
     }>
 }
+interface ILearningProgressData {
+    video_id: string,
+    video_title: string,
+    play_progress_Ts: number
+}
+export type ILearningProgressStorage = Array<ILearningProgressData>
+
 export class LocalStorage {
     caption_storage_key = 'yt_caption_key'
+    learningProgress_storage_key = 'lern_prog_key'
+    learningProgress_storage_Max = 20
     getCaptionItem(video_id: string, lang: Lang): {
         status: 'success' | 'failure',
         data?: ICaptionData
@@ -68,6 +77,54 @@ export class LocalStorage {
             status: "success"
         }
     }
+    /**
+     * 
+     * @param video_id 视频id
+     * @param video_title
+     * 最多存20条记录
+     */
+    setLearningProgress(video_id: string, video_title: string, play_progress_Ts: number): {
+        status: 'success' | 'failure'
+    } {
+        /**
+        * 先取出，再写入。
+        */
+        let old_storage = localStorage.getItem(this.learningProgress_storage_key) as any;
+        old_storage && (old_storage = JSON.parse(old_storage));
+
+        let new_storage: ILearningProgressStorage = old_storage || [];
+
+        let newStorageItem = new_storage.find(item => {
+            return item.video_id === video_id
+        });
+        if (newStorageItem) {
+            //更新
+            newStorageItem.play_progress_Ts = play_progress_Ts;
+            newStorageItem.video_title = video_title;
+            //跟第一个调换顺序
+            new_storage.splice(new_storage.indexOf(newStorageItem),1)
+            new_storage.unshift(newStorageItem)
+        } else {
+            //条目限制。
+            if (new_storage.length >= this.learningProgress_storage_Max) {
+                new_storage.splice(new_storage.length - 1, 1)
+            }
+            new_storage.unshift({
+                video_id,
+                video_title,
+                play_progress_Ts
+            })
+        }
+        //写入
+        localStorage.setItem(this.learningProgress_storage_key, JSON.stringify(new_storage))
+        return {
+            status: 'success'
+        }
+    }
+    getLearningProgress(): ILearningProgressStorage {
+        let storage = localStorage.getItem(this.learningProgress_storage_key) as any;
+        return storage ? (JSON.parse(storage) as ILearningProgressStorage) : [];
+    }
 }
 const getSingle = (ClassObject: new () => any) => {
     return (function () {
@@ -76,4 +133,4 @@ const getSingle = (ClassObject: new () => any) => {
     })()
 }
 
-export const singleStorage:LocalStorage = getSingle(LocalStorage)
+export const singleStorage: LocalStorage = getSingle(LocalStorage)

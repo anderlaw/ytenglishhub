@@ -30,13 +30,6 @@ const Main: React.FC<{
     //   onLinkValidate("success");
     // }, 1000);
   };
-  useEffect(() => {
-    console.log(
-      qs.parse("https://afafva.com/name?name=xxxx", {
-        ignoreQueryPrefix: false,
-      })
-    );
-  }, []);
   return (
     <Dialog
       open={open}

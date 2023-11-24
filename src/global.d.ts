@@ -1,6 +1,9 @@
-declare const window: any;
-declare const document:any;
-
-declare namespace Global {
-    
+declare interface Window {
+    onYouTubeIframeAPIReady: any
+    YT:any
+    C_YTPlayer:any
+    YTIframeAPIReady:boolean
+}
+declare interface Location{
+    href:any
 }
