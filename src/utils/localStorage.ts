@@ -89,7 +89,7 @@ export class LocalStorage {
      * @param video_title
      * 最多存20条记录
      */
-    setLearningProgress(video_id: string, video_title: string, play_progress_Ts: number): {
+    setLearningProgress(video_id: string, video_title: string, play_progress_Ts: number = 0): {
         status: 'success' | 'failure'
     } {
         /**
@@ -171,8 +171,13 @@ export class LocalStorage {
         let old_storage = localStorage.getItem(this.noteBook_storage_key) as any;
         old_storage && (old_storage = JSON.parse(old_storage));
         if (old_storage) {
-            delete old_storage[word]
+            const oldIndex = old_storage.findIndex((item: { word: string }) => item.word === word.toLowerCase())
+            if (oldIndex > -1) {
+                old_storage.splice(oldIndex, 1)
+                localStorage.setItem(this.noteBook_storage_key, JSON.stringify(old_storage))
+            }
         }
+
     }
     getNoteBook(): INoteBookStorage {
         let storage = localStorage.getItem(this.noteBook_storage_key) as any;

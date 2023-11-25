@@ -18,12 +18,15 @@ type StateType = {
   player: any;
   subtitleEvents: Array<any>;
   tabIndex: number;
+  videoWidth: number;
   videoHeight: number;
   currentTime: number;
   curTimeTracker: any;
+  subTracker: any;
   learningProgressTracker: any;
   addBookDialogOpen: boolean;
   sentenceWithWord: string;
+  words_in_notebook: string[];
 };
 type PropType = {};
 interface Main {
@@ -38,22 +41,83 @@ class Main extends Component {
       player: null,
       subtitleEvents: [],
       tabIndex: 0,
+      videoWidth: 0,
       videoHeight: 0,
       currentTime: 0,
       curTimeTracker: null,
+      subTracker: null,
       learningProgressTracker: null,
       addBookDialogOpen: false,
       sentenceWithWord: "",
+      words_in_notebook: [],
     };
   }
+  initNoteBookState() {
+    //获取本地单词本
+    const notebookStorage = singleStorage.getNoteBook();
+    this.setState({
+      words_in_notebook: notebookStorage.map((item) => item.word),
+    });
+  }
+  writeLearningProgress() {
+    const videoData = this.state.player.getVideoData();
+    singleStorage.setLearningProgress(videoData.video_id, videoData.title);
+  }
+  updateAutoProgressTrackState(on: boolean) {
+    const updateCurrentTime = () =>
+      this.setState({
+        currentTime: this.state.player.getCurrentTime() * 1000,
+      });
+    let scrolling = false;
+    const scrollToCurrentSub = () => {
+      const subContainer = document.querySelector(".sub-container") as any;
+      const activeSubRow =
+        document.querySelector(".sub-row.active") ||
+        (document.querySelector(".sub-row") as any);
+      console.log(`parent top:${subContainer.getBoundingClientRect().top}`);
+      console.log(`active top:${activeSubRow.getBoundingClientRect().top}`);
+      console.log(`parent height:${subContainer.clientHeight / 2}`);
+
+      if (
+        activeSubRow.getBoundingClientRect().top -
+          subContainer.getBoundingClientRect().top >
+        (subContainer.clientHeight * 4) / 5
+      ) {
+        scrolling = true;
+        setTimeout(() => {
+          if ((scrolling = true)) {
+            scrolling = false;
+            subContainer.scrollTo({
+              top: subContainer.scrollTop + (subContainer.clientHeight * 2) / 3,
+              behavior: "smooth",
+            });
+          }
+        }, 0);
+      }
+    };
+    if (on) {
+      //开启跟屏
+      this.setState({
+        curTimeTracker: setInterval(updateCurrentTime, 300),
+        subTracker: setInterval(scrollToCurrentSub, 2000),
+      });
+    } else {
+      //关闭跟屏
+      clearInterval(this.state.curTimeTracker);
+      clearInterval(this.state.subTracker);
+    }
+  }
   componentDidMount() {
+    this.initNoteBookState();
+
     const width = parseFloat(
       getComputedStyle((document as any).querySelector("#left-box")).width
     );
     console.log("width of left--->", width);
 
-    const height = width / 1.777;
+    const height = (width * 9) / 16;
     this.setState({
+      videoWidth: width,
       videoHeight: height,
     });
     try {
@@ -126,21 +190,22 @@ class Main extends Component {
         events: {
           onReady: (event: any) => {
             //设置到保存的视频进度值
-            const oldProgressItem = singleStorage
-              .getLearningProgress()
-              .find(
-                (item) =>
-                  item.video_id === this.state.player.getVideoData().video_id
-              );
-            oldProgressItem &&
-              this.state.player.seekTo(oldProgressItem.play_progress_Ts / 1000);
+            // const oldProgressItem = singleStorage
+            //   .getLearningProgress()
+            //   .find(
+            //     (item) =>
+            //       item.video_id === this.state.player.getVideoData().video_id
+            //   );
+            // oldProgressItem &&
+            //   this.state.player.seekTo(oldProgressItem.play_progress_Ts / 1000);
+
             // event.target.playVideo();
             //启动计时器。每一秒轮训视频的播放进度
             // const timer = setInterval(() => {
             //   this.setState({
             //     currentTime: this.state.player.getCurrentTime() * 1000,
             //   });
-            // }, 1000);
+            // }, 500);
             //启动计时器。记录学习进度
             // const timer2 = setInterval(() => {
             //   const videoData = this.state.player.getVideoData();
@@ -150,6 +215,7 @@ class Main extends Component {
             //     this.state.currentTime
             //   );
             // }, 5000);
+            this.writeLearningProgress();
             //记录timer，方便后续卸载清除
             // this.setState({
             //   curTimeTracker: timer,
@@ -158,7 +224,9 @@ class Main extends Component {
           },
           onStateChange: (event: any) => {
             if (event.data === window.YT.PlayerState.PLAYING) {
-              console.log(this.state.player);
+              this.updateAutoProgressTrackState(true);
+            } else {
+              this.updateAutoProgressTrackState(false);
             }
           },
         },
@@ -189,11 +257,16 @@ class Main extends Component {
         <AddWordBookComponent
           open={this.state.addBookDialogOpen}
           rawSentence={this.state.sentenceWithWord}
-          handleClose={() =>
+          // onSelectedWordsUpdate={(words) => {
+          //   console.log(words);
+          // }}
+          handleClose={() => {
+            //更新单词的标记状态
+            this.initNoteBookState();
             this.setState({
               addBookDialogOpen: false,
-            })
-          }
+            });
+          }}
         />
         <NavComponent />
         <MainTwoComponent
@@ -202,13 +275,12 @@ class Main extends Component {
             <Box
               sx={{
                 paddingLeft: "30px",
-                height: `${this.state.videoHeight}px` || "auto",
               }}
             >
               <div
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  width: `${this.state.videoWidth}px` || "100%",
+                  height: `${this.state.videoHeight}px` || "auto",
                 }}
                 id="player"
               ></div>
@@ -269,25 +341,58 @@ class Main extends Component {
                       >
                         {event.segs.map(
                           (seg: any, index: React.Key | null | undefined) => {
+                            const slicedPiecesFromSeg =
+                              seg.utf8.match(/([\w'",.]+[.,]?)/g) || [];
                             return (
-                              <span
-                                key={index}
-                                className="sub-word"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  const tStartMs = event.tStartMs;
-                                  const tOffsetMs = seg.tOffsetMs || 0;
-                                  const currentWordTime =
-                                    (tStartMs + tOffsetMs) / 1000;
-                                  this.state.player.seekTo(
-                                    currentWordTime,
-                                    true
-                                  );
-                                  this.state.player.playVideo();
-                                }}
-                              >
-                                {seg.utf8}
-                              </span>
+                              <React.Fragment>
+                                <span
+                                  key={index}
+                                  className="sub-word"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => {
+                                    const tStartMs = event.tStartMs;
+                                    const tOffsetMs = seg.tOffsetMs || 0;
+                                    const currentWordTime =
+                                      (tStartMs + tOffsetMs) / 1000;
+                                    if (
+                                      this.state.player &&
+                                      this.state.player.seekTo
+                                    ) {
+                                      this.state.player.seekTo(
+                                        currentWordTime,
+                                        true
+                                      );
+
+                                      this.state.player.playVideo();
+                                    }
+                                  }}
+                                >
+                                  {slicedPiecesFromSeg.map((item: string) => {
+                                    let trimedWord = item.match(/(\w)+/);
+                                    if (!trimedWord) {
+                                      console.error(
+                                        `单词解析错误---> seg:${seg}`
+                                      );
+                                      trimedWord = [""];
+                                    }
+                                    const marked =
+                                      this.state.words_in_notebook.indexOf(
+                                        trimedWord[0].toLowerCase()
+                                      ) > -1;
+                                    return (
+                                      <React.Fragment>
+                                        <span
+                                          style={{ color: marked ? "red" : "" }}
+                                        >
+                                          {item}
+                                        </span>
+                                        &nbsp;
+                                      </React.Fragment>
+                                    );
+                                  })}
+                                </span>
+                                &nbsp;
+                              </React.Fragment>
                             );
                           }
                         )}
@@ -311,7 +416,7 @@ class Main extends Component {
               )}
               {/*  单词本  */}
               {this.state.tabIndex === 1 && (
-                <Box sx={{ padding:'16px' }}>
+                <Box sx={{ padding: "16px" }}>
                   <NoteBookComponent />
                 </Box>
               )}

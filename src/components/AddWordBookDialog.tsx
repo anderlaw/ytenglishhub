@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useMemo } from "react";
 import { singleStorage } from "utils/localStorage";
 export const AddWordBookComponent: React.FC<{
+  // onSelectedWordsUpdate:(words:string[])=>void;
   rawSentence: string;
   open: boolean;
   handleClose?: () => void;
@@ -38,6 +39,10 @@ export const AddWordBookComponent: React.FC<{
       )
     );
   }, [rawSentence]);
+  // useEffect(() => {
+  //   //emit event
+  //   onSelectedWordsUpdate(words_been_select)
+  // }, [words_been_select]);
   return (
     <React.Fragment>
       <Dialog
@@ -83,8 +88,7 @@ export const AddWordBookComponent: React.FC<{
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>取消</Button>
-          <Button onClick={() => {}}>确定</Button>
+          <Button onClick={handleClose}>关闭</Button>
         </DialogActions>
       </Dialog>
       {/* 警告对话框 */}

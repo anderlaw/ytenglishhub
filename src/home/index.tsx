@@ -41,8 +41,16 @@ const Main: React.FC<{}> = () => {
   const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   useEffect(() => {
+    const recentVideoStKey = "cached_recent_videoList";
+    const cachedRecentVideoList = JSON.parse(
+      localStorage.getItem(recentVideoStKey)!
+    );
+    if (cachedRecentVideoList) {
+      setVideoList(cachedRecentVideoList);
+    }
     getRecentVideoList().then((res) => {
       if (res.status === 200) {
+        localStorage.setItem(recentVideoStKey, JSON.stringify(res.data.Items));
         setVideoList(res.data.Items);
       }
     });
