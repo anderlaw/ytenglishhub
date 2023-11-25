@@ -2,7 +2,6 @@
   "name": "love-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://anderlaw.github.io/chogolish",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.454.0",
     "@aws-sdk/client-s3": "^3.454.0",
