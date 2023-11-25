@@ -93,17 +93,17 @@ const Main: React.FC<{}> = () => {
       {/*  navigation menu */}
       <NavComponent
         menus={[
+          // {
+          //   name: "单词本",
+          //   icon: <MenuBookIcon />,
+          // },
           {
-            name: "单词本",
-            icon: <MenuBookIcon />,
+            name: "分类",
+            icon: <CategoryIcon />,
           },
           {
             name: "添加",
             icon: <LinkIcon />,
-          },
-          {
-            name: "分类",
-            icon: <CategoryIcon />,
           },
         ]}
         onMenuItemClick={(menuName) => {
