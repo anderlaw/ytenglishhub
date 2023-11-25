@@ -10,7 +10,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LinkIcon from "@mui/icons-material/Link";
 import CategoryIcon from "@mui/icons-material/Category";
 

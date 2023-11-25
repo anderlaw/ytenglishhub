@@ -1,7 +1,6 @@
 import { StarLevel } from "components/StarLevel";
 import { Box } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 export const DemoComponent: React.FC<{}> = () => {
   return (

@@ -1,9 +1,6 @@
 import * as React from "react";
 
 export class GlobalComponent extends React.Component {
-  constructor(props: {} | Readonly<{}>) {
-    super(props);
-  }
   componentDidMount() {
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";

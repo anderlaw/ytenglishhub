@@ -1,10 +1,6 @@
 import {
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
   Chip,
   FormControl,
   InputLabel,
@@ -13,26 +9,12 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
-  Typography,
 } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
 import React, { useEffect, useState } from "react";
-import AddURLDialog from "../AddURLDialog";
-import CategoryDialog from "../CategoryDialog";
-import LearningProcess from "../LearningProcess";
-
-import NavComponent from "layouts/Nav";
-import { MainTwoComponent } from "layouts/MainTwo";
-import { CategoryData } from "./category-data";
-import axios from "axios";
 import {
-  getCategoryVideoList,
-  getRecentVideoList,
   insertVideo,
 } from "api/video";
 import { getVideoCategory } from "api/category";
-const url =
-  "https://i.ytimg.com/vi/kuWCMrKk9m4/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLB1Uo0gOOfPEQei9x-qLNCZRtcGNQ";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

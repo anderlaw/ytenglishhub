@@ -5,14 +5,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from "@mui/material";
 import { default as AddIcon } from "@mui/icons-material/AddCircleOutlined";
 import { default as DeleteIcon } from "@mui/icons-material/RemoveCircleOutlined";
 
 import React, { useEffect, useState } from "react";
-import { useMemo } from "react";
 import { singleStorage } from "utils/localStorage";
 export const AddWordBookComponent: React.FC<{
   // onSelectedWordsUpdate:(words:string[])=>void;

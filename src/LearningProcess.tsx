@@ -3,14 +3,12 @@ import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { FixedSizeList, ListChildComponentProps } from "react-window";
-import { PureComponent } from "react";
-import { CardMedia, List, Typography } from "@mui/material";
+import { CardMedia, List } from "@mui/material";
 import { ILearningProgressStorage, singleStorage } from "utils/localStorage";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Main = (props: any) => {
+const Main = () => {
   const [learningProgressData, setLearningProgressData] =
     React.useState<ILearningProgressStorage>([]);
   useEffect(() => {

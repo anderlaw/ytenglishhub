@@ -8,15 +8,10 @@ import {
   createBrowserRouter,
   RouterProvider,
   Route,
-  Link,
   createRoutesFromElements,
-  Outlet,
-  useRoutes,
 } from "react-router-dom";
-import { Box } from "@mui/material";
 import HomeComponent from "./home";
 import VideoPlayComponent from "./video-play";
-import axios from "axios";
 import { CMSComponent } from "cms";
 import { DemoComponent } from "demo";
 import '@fontsource/roboto/300.css';

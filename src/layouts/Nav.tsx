@@ -1,8 +1,5 @@
 import { Box, Chip, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
-import CategoryIcon from "@mui/icons-material/Category";
-import LinkIcon from "@mui/icons-material/Link";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import React from "react";
 export const NavComponent: React.FC<{
   onMenuItemClick?: (name: string) => void;

@@ -1,15 +1,9 @@
 import { Box } from "@mui/material";
-import Grid2 from "@mui/material/Unstable_Grid2";
 import axios from "axios";
 import React from "react";
 import { ReactNode, Component } from "react";
-import { PlayIcon } from "./icons/PlayIcon";
-import { StarIcon } from "./icons/StarIcon";
-import { FavoriteIcon } from "./icons/FavoriteIcon";
-import testData from "./data";
 import NavComponent from "layouts/Nav";
 import { MainTwoComponent } from "layouts/MainTwo";
-import BookIcon from "@mui/icons-material/Book";
 import { TabComponent } from "components/Tab";
 import { singleStorage } from "utils/localStorage";
 import { AddWordBookComponent } from "components/AddWordBookDialog";
@@ -68,6 +62,7 @@ class Main extends Component {
       this.setState({
         currentTime: this.state.player.getCurrentTime() * 1000,
       });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let scrolling = false;
     const scrollToCurrentSub = () => {
       const subContainer = document.querySelector(".sub-container") as any;

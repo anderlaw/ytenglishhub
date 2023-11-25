@@ -3,33 +3,22 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   FormControl,
   Input,
   InputAdornment,
-  InputLabel,
-  TextField,
 } from "@mui/material";
-import qs from "qs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LinkIcon from "@mui/icons-material/Link";
 import { useNavigate } from "react-router-dom";
 const Main: React.FC<{
   open: boolean;
   handleClose: () => void;
   onLinkValidate: (result: "success" | "failed") => void;
-}> = ({ open, handleClose, onLinkValidate }) => {
+}> = ({ open, handleClose }) => {
   const [linkText, setLinkText] = useState<string>("");
   const navigate = useNavigate();
-  const handleOK = () => {
-    console.log();
-    // setTimeout(() => {
-    //   const data = [{}];
-    //   //处理并验证视频地址是否真实有效
-    //   onLinkValidate("success");
-    // }, 1000);
-  };
+
   return (
     <Dialog
       open={open}

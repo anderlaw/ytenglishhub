@@ -1,13 +1,9 @@
 import {
   Box,
-  Button,
   Chip,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  Stack,
 } from "@mui/material";
 const categoryData = [
   "Movie", //针对某部电影的评论、短片和内容制作
