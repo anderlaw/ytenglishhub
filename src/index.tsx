@@ -44,7 +44,7 @@ const routes = createRoutesFromElements(
   </Route>
 );
 const router = createBrowserRouter(routes,{
-    basename:process.env.NODE_ENV ==='development' ? '/':'/chogolish'
+    // basename:process.env.NODE_ENV ==='development' ? '/':'/chogolish'
 });
 createRoot(document.getElementById("root") as HTMLElement).render(
   <RouterProvider router={router} />
