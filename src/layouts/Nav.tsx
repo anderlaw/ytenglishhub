@@ -21,7 +21,17 @@ export const NavComponent: React.FC<{
         height: "60px",
       }}
     >
-      <Link to="/">Logo here</Link>
+      <Link
+        to="/"
+        style={{
+          textDecoration: "none",
+          color: "purple",
+          fontSize: "17px",
+          fontWeight: 600,
+        }}
+      >
+        Chogolish
+      </Link>
       {menus && (
         <Box>
           <Stack direction="row" spacing={1}>
