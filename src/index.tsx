@@ -25,7 +25,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 const routes = createRoutesFromElements(
   <Route path="/" element={<App />}>
-    <Route path="/" element={<HomeComponent />} />
+    <Route index element={<HomeComponent />} />
     <Route
       path="video"
       element={<VideoPlayComponent />}
@@ -43,7 +43,9 @@ const routes = createRoutesFromElements(
     </Route> */}
   </Route>
 );
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes,{
+    basename:process.env.NODE_ENV ==='development' ? '/':'/chogolish'
+});
 createRoot(document.getElementById("root") as HTMLElement).render(
   <RouterProvider router={router} />
 );
