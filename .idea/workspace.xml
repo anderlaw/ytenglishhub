@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6456ce9a-6df9-4517-8c62-ad7f40814472" name="Changes" comment="rollback">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/flow.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/flow.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/chogolish-app.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023_11_25,_15_26_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023_11_25__15_26__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+    <list default="true" id="6456ce9a-6df9-4517-8c62-ad7f40814472" name="Changes" comment="CI">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +30,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -50,7 +44,7 @@
       <workItem from="1700893083659" duration="8000" />
       <workItem from="1700894128520" duration="2623000" />
       <workItem from="1700898384749" duration="4017000" />
-      <workItem from="1700908023873" duration="6672000" />
+      <workItem from="1700908023873" duration="7057000" />
     </task>
     <task id="LOCAL-00001" summary="chore">
       <created>1700897175068</created>
@@ -87,7 +81,14 @@
       <option name="project" value="LOCAL" />
       <updated>1700916214489</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="CI">
+      <created>1700917635323</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1700917635323</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -106,8 +107,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="chore" />
-    <MESSAGE value="CI" />
     <MESSAGE value="rollback" />
-    <option name="LAST_COMMIT_MESSAGE" value="rollback" />
+    <MESSAGE value="CI" />
+    <option name="LAST_COMMIT_MESSAGE" value="CI" />
   </component>
 </project>
