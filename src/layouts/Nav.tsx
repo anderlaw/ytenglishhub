@@ -27,7 +27,7 @@ export const NavComponent: React.FC<{
           fontWeight: 600,
         }}
       >
-        Chogolish
+        YTEnglishHub
       </Link>
       {menus && (
         <Box>

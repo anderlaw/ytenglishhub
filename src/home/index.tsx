@@ -11,8 +11,7 @@ import {
 } from "@mui/material";
 
 import LinkIcon from "@mui/icons-material/Link";
-import CategoryIcon from "@mui/icons-material/Category";
-
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import Grid from "@mui/material/Unstable_Grid2";
 import React, { useEffect, useState } from "react";
 import AddURLDialog from "../AddURLDialog";
@@ -97,21 +96,21 @@ const Main: React.FC<{}> = () => {
           //   icon: <MenuBookIcon />,
           // },
           {
-            name: "分类",
-            icon: <CategoryIcon />,
+            name: "分类检索",
+            icon: <ManageSearchIcon />,
           },
           {
-            name: "添加",
+            name: "添加链接",
             icon: <LinkIcon />,
           },
         ]}
         onMenuItemClick={(menuName) => {
           console.log(menuName);
           switch (menuName) {
-            case "分类":
+            case "分类检索":
               setCateDialogOpen(true);
               break;
-            case "添加":
+            case "添加链接":
               setAddDialogOpen(true);
           }
         }}
@@ -154,7 +153,7 @@ const Main: React.FC<{}> = () => {
                         <CardMedia
                           component="img"
                           height="200"
-                          image={item.cover_url}
+                          image={`https://img.youtube.com/vi/${item.video_id}/hq720.jpg`}
                           alt="green iguana"
                         />
                         <CardContent>
