@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 import LinkIcon from "@mui/icons-material/Link";
-import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import Grid from "@mui/material/Unstable_Grid2";
 import React, { useEffect, useState } from "react";
 import AddURLDialog from "../AddURLDialog";
@@ -23,6 +23,7 @@ import { MainTwoComponent } from "layouts/MainTwo";
 import { getCategoryVideoList, getRecentVideoList } from "api/video";
 import { useNavigate } from "react-router-dom";
 import { StarLevel } from "components/StarLevel";
+
 interface IVideoItem {
   title: string;
   video_id: string;
@@ -174,20 +175,26 @@ const Main: React.FC<{}> = () => {
                               display: "flex",
                               justifyContent: "space-between",
                               alignItems: "center",
+                              marginBottom: "6px"
                             }}
                           >
-                            <Box sx={{ minWidth: "70px" }}>难度等级</Box>
+                            <Box
+                              sx={{ minWidth: "70px" }}
+                            >
+                              难度等级:
+                            </Box>
                             <StarLevel
                               size="small"
                               color="secondary"
-                              score={65}
+                              score={item.flesch_score}
                             />
+                            {}
                           </Box>
                           <Box>
                             {item.category_labels.map((label) => (
                               <Chip
                                 key={label}
-                                color="success"
+                                color="info"
                                 size="small"
                                 label={label}
                               />

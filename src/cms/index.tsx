@@ -11,9 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {
-  insertVideo,
-} from "api/video";
+import { insertVideo } from "api/video";
 import { getVideoCategory } from "api/category";
 
 const ITEM_HEIGHT = 48;
@@ -49,7 +47,7 @@ export const CMSComponent: React.FC<{}> = () => {
     );
   };
   useEffect(() => {
-    //获取分类
+    //读取分类
     getVideoCategory().then((res: any) => {
       if (res.status === 200) {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -70,18 +68,6 @@ export const CMSComponent: React.FC<{}> = () => {
           value={title}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setTitle(event.target.value);
-          }}
-        />
-      </FormControl>
-      <br />
-      <FormControl sx={{ m: 1, width: 400 }}>
-        <TextField
-          id="outlined-basic"
-          label="视频封面地址"
-          variant="outlined"
-          value={cover_url}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setCoverUrl(event.target.value);
           }}
         />
       </FormControl>
