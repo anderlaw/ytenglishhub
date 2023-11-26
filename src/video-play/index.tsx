@@ -379,9 +379,8 @@ class Main extends Component {
                                         <span
                                           style={{ color: marked ? "red" : "" }}
                                         >
-                                          {item}
+                                          {item + "\n"}
                                         </span>
-                                        &nbsp;
                                       </React.Fragment>
                                     );
                                   })}
