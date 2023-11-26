@@ -7,65 +7,38 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-const categoryData = [
-  {
-    label: "Movie", //针对某部电影的评论、短片和内容制作
-    zh: "电影相关",
-  },
-  {
-    label: "Health", //与健康相关的，比如如何让自己更健康，比如健康的生活方式，饮食等等
-    zh: "健康",
-  },
-  {
-    label: "Sports", //运动相关
-    zh: "运动",
-  },
-  {
-    label: "Gaming", //游戏相关
-    zh: "游戏",
-  },
-  {
-    label: "Gaming", //游戏相关
-    zh: "游戏",
-  },
-  {
-    label: "Self-Improvement", //自我提升，比如学习，爱好，培养兴趣，读书啊，锻炼自己啊,
-    zh: "游戏",
-  },
-  {
-    label: "Music", //音乐,
-    zh: "音乐",
-  },
-  {
-    label: "Animal", //动物，宠物相关
-    zh: "动物",
-  },
-  {
-    label: "Travel", //音乐,
-    zh: "旅行",
-  },
-  {
-    label: "Famous", //音乐,
-    zh: "名人",
-  },
-  {
-    label: "Politics", //音乐,
-    zh: "政治",
-  },
-  {
-    label: "Teaching", //音乐,
-    zh: "教学",
-  },
-  {
-    label: "Science and Technology", //音乐,
-    zh: "科学与技术",
-  },
-];
+import { useEffect, useState } from "react";
+// const categoryData =
+
 const Main: React.FC<{
   open: boolean;
   handleClose?: () => void;
   onLabelClick: (label: string) => void;
 }> = ({ open, handleClose, onLabelClick }) => {
+  const [categoryData, setCategoryData] = useState<Array<string>>([]);
+  useEffect(() => {
+    if (open) {
+      const categoryDataStorage = localStorage.getItem(
+        "video_category_storage_key"
+      );
+      categoryDataStorage && setCategoryData(JSON.parse(categoryDataStorage));
+    }
+  }, [open]);
+
+  const categoryLabelMap = {
+    Movie: "电影相关", //针对某部电影的评论、短片和内容制作
+    Health: "健康", //与健康相关的，比如如何让自己更健康，比如健康的生活方式，饮食等等
+    Sports: "运动", //运动相关
+    Gaming: "游戏", //游戏相关
+    "Self-Improvement": "游戏", //自我提升，比如学习，爱好，培养兴趣，读书啊，锻炼自己啊,
+    Music: "音乐", //音乐,
+    Animal: "动物", //动物，宠物相关
+    Travel: "旅行", //音乐,
+    Celebrity: "名人", //音乐,
+    Politics: "政治", //音乐
+    Teaching: "教学", //音乐,
+    "Science and Technology": "科学与技术", //音乐,
+  } as any;
   return (
     <Dialog
       open={open}
@@ -73,19 +46,21 @@ const Main: React.FC<{
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{"点击某个分类搜索视频"}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">
+        {"点击某个分类搜索视频"}
+      </DialogTitle>
       <DialogContent>
         <Box>
-          {categoryData.map((item) => (
+          {categoryData.map((label) => (
             <Chip
               sx={{
                 margin: "6px",
               }}
               color="success"
-              key={item.label}
-              label={item.zh}
+              key={label}
+              label={categoryLabelMap[label]}
               variant="outlined"
-              onClick={() => onLabelClick(item.label)}
+              onClick={() => onLabelClick(label)}
             />
           ))}
         </Box>
