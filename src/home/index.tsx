@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { StarLevel } from "components/StarLevel";
 
 interface IVideoItem {
+  cover_file_name: string;
   title: string;
   video_id: string;
   category_labels: string[];
@@ -154,9 +155,18 @@ const Main: React.FC<{}> = () => {
                         <CardMedia
                           component="img"
                           height="200"
-                          image={`https://img.youtube.com/vi/${item.video_id}/hq720.jpg`}
+                          image={`https://img.youtube.com/vi/${item.video_id}/${
+                            item.cover_file_name || "hq720.jpg"
+                          }`}
+                          onError={(e: any) => console.log(111111, e)}
                           alt="green iguana"
                         />
+                        {/* <img
+                          alt="xxx"
+                          src={`https://img.youtube.com/vi/${item.video_id}/hq720.jpg`}
+                          // onError={`https://img.youtube.com/vi/${item.video_id}/hqdefault.jpg` as any}
+                          onError={(e) => console.log(e)}
+                        /> */}
                         <CardContent>
                           <Typography
                             gutterBottom
@@ -175,14 +185,10 @@ const Main: React.FC<{}> = () => {
                               display: "flex",
                               justifyContent: "space-between",
                               alignItems: "center",
-                              marginBottom: "6px"
+                              marginBottom: "6px",
                             }}
                           >
-                            <Box
-                              sx={{ minWidth: "70px" }}
-                            >
-                              难度等级:
-                            </Box>
+                            <Box sx={{ minWidth: "70px" }}>难度等级:</Box>
                             <StarLevel
                               size="small"
                               color="secondary"

@@ -22,7 +22,7 @@ export const getCategoryVideoList = (category_label: string, lastKey?: any) => {
 
 export const insertVideo = (video_detail: {
     title: string,
-    cover_url: string,
+    cover_url?: string,
     video_id: string,
     category_labels: Array<string>,
     flesch_score: number

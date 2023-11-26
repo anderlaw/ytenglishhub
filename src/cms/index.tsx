@@ -131,7 +131,6 @@ export const CMSComponent: React.FC<{}> = () => {
           onClick={() => {
             insertVideo({
               title,
-              cover_url,
               video_id,
               category_labels,
               flesch_score: Number(flesch_score),

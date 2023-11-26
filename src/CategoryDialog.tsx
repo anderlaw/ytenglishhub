@@ -38,6 +38,7 @@ const Main: React.FC<{
     Politics: "政治", //音乐
     Teaching: "教学", //音乐,
     "Science and Technology": "科学与技术", //音乐,
+    Inspiring: "激励",
   } as any;
   return (
     <Dialog
@@ -58,7 +59,7 @@ const Main: React.FC<{
               }}
               color="success"
               key={label}
-              label={categoryLabelMap[label]}
+              label={categoryLabelMap[label] || label}
               variant="outlined"
               onClick={() => onLabelClick(label)}
             />
