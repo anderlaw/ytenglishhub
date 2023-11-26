@@ -31,7 +31,6 @@ function getStyles(name: string, personName: readonly string[]) {
 }
 export const CMSComponent: React.FC<{}> = () => {
   const [title, setTitle] = useState<string>("");
-  const [cover_url, setCoverUrl] = useState<string>("");
   const [video_id, setVideoId] = useState<string>("");
   const [category_labels, setCategoryLabels] = useState<string[]>([]);
   const [flesch_score, setFleschScore] = React.useState<string>("");
@@ -144,7 +143,6 @@ export const CMSComponent: React.FC<{}> = () => {
                     alert("添加成功");
                     //清空上个添加
                     setTitle("");
-                    setCoverUrl("");
                     setVideoId("");
                     setCategoryLabels([]);
                     setFleschScore("");
