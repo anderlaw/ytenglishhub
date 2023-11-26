@@ -23,6 +23,7 @@ import { MainTwoComponent } from "layouts/MainTwo";
 import { getCategoryVideoList, getRecentVideoList } from "api/video";
 import { useNavigate } from "react-router-dom";
 import { StarLevel } from "components/StarLevel";
+import { categoryLabelMap } from "utils/categoryLabelMap";
 
 interface IVideoItem {
   cover_file_name: string;
@@ -202,7 +203,7 @@ const Main: React.FC<{}> = () => {
                                 key={label}
                                 color="info"
                                 size="small"
-                                label={label}
+                                label={categoryLabelMap[label] || label}
                               />
                             ))}
                           </Box>
