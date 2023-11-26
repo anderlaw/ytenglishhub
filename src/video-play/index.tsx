@@ -21,6 +21,7 @@ type StateType = {
   addBookDialogOpen: boolean;
   sentenceWithWord: string;
   words_in_notebook: string[];
+  programming_paused: boolean;
 };
 type PropType = {};
 interface Main {
@@ -44,8 +45,10 @@ class Main extends Component {
       addBookDialogOpen: false,
       sentenceWithWord: "",
       words_in_notebook: [],
+      programming_paused: false,
     };
   }
+
   initNoteBookState() {
     //获取本地单词本
     const notebookStorage = singleStorage.getNoteBook();
@@ -261,6 +264,13 @@ class Main extends Component {
             this.setState({
               addBookDialogOpen: false,
             });
+            //恢复对程序暂停的播放并取消标记
+            if (this.state.programming_paused === true) {
+              this.state.player.playVideo();
+              this.setState({
+                programming_paused: false,
+              });
+            }
           }}
         />
         <NavComponent />
@@ -393,6 +403,16 @@ class Main extends Component {
                         <Box
                           className="favorite-icon"
                           onClick={() => {
+                            if (
+                              this.state.player.getPlayerState() ===
+                              window.YT.PlayerState.PLAYING
+                            ) {
+                              //当有视频播放时暂停并记录
+                              this.state.player.pauseVideo();
+                              this.setState({
+                                programming_paused: true,
+                              });
+                            }
                             //pars sentence to word
                             const sentence = event.segs
                               .map((seg: { utf8: any }) => seg.utf8)
