@@ -13,5 +13,5 @@ export const categoryLabelMap: {
     Politics: "政治", //音乐
     Teaching: "教学", //音乐,
     "Science and Technology": "科学与技术", //音乐,
-    Inspiring: "激励&励志",
+    Inspiring: "励志"
 };
