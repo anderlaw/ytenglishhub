@@ -1,0 +1,10 @@
+分类:
+{
+    record_type:category
+    label:分类名称（英文）
+}
+视频:
+{
+    record_type:video
+    category_labels:['label']
+}
