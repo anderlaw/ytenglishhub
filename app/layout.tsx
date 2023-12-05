@@ -32,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
         <script src="https://d3js.org/d3.v7.min.js" />
         <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js" />
         <link
@@ -40,10 +41,11 @@ export default function RootLayout({
         ></link>
         <script src="https://unpkg.com/cal-heatmap/dist/plugins/Legend.min.js" />
         <script src="https://unpkg.com/cal-heatmap/dist/plugins/LegendLite.min.js" />
-        <script src="https://unpkg.com/cal-heatmap/dist/plugins/CalendarLabel.min.js" />
 
         <script src="https://unpkg.com/@popperjs/core@2" />
         <script src="https://unpkg.com/cal-heatmap/dist/plugins/Tooltip.min.js" />
+
+        <script src="https://unpkg.com/cal-heatmap/dist/plugins/CalendarLabel.min.js" />
       </head>
       <body>
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>

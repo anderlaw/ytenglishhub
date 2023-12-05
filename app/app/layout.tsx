@@ -11,6 +11,14 @@ export default function AboutLayout({
 }) {
   return (
     <>
+      <Script
+        src="https://www.youtube.com/iframe_api"
+        onLoad={() => {
+          window.onYouTubeIframeAPIReady = () => {
+            window.YTIframeAPIReady = true;
+          };
+        }}
+      />
       <Navbar />
       <LeftMenu />
       <main style={{ marginTop: "64px", marginLeft: "200px" }}>{children}</main>

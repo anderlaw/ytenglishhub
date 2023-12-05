@@ -1,132 +1,50 @@
 "use client"; // This is a client component 👈🏽
 import { title } from "@/components/primitives";
-import { Button } from "@nextui-org/button";
 // BsFillQuestionCircleFill
 import Call from "react-calendar-heatmap";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Divider,
-  Link,
-  Image,
-  Tooltip,
-} from "@nextui-org/react";
-import CalHeatmap from "cal-heatmap";
+
+import { Unstable_Grid2 as Grid } from "@mui/material";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 // Optionally import the CSS
 import "cal-heatmap/cal-heatmap.css";
 import Hotmap from "@/components/hotmap";
+const card = (
+  <>
+    <CardContent>
+      {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+        Word of the Day
+      </Typography> */}
+      <Typography variant="h5" component="div">
+        love
+      </Typography>
+      <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        adjective
+      </Typography>
+      <Typography variant="body2">
+        well meaning and kindly.
+        <br />
+        {'"a benevolent smile"'}
+      </Typography>
+    </CardContent>
+    <CardActions>掌握度：80%</CardActions>
+  </>
+);
 export default function AboutPage() {
   return (
     <>
-      <Card className="basis-1/3">
-        <CardHeader className="flex gap-3">
-          <div className="flex flex-col">
-            <p className="text-md">
-              <span>学习进度</span>
-              <Tooltip content="该当日展示今天您的计划完成情况">
-                <span style={{ padding: "6px", backgroundColor: "#ccc" }}>
-                  ?
-                </span>
-              </Tooltip>
-            </p>
-            <p className="text-small text-default-500">
-              展示今天您的计划完成情况
-            </p>
-          </div>
-        </CardHeader>
-        <Divider />
-        <CardBody>
-          <p>{`单词：${"40"}/${"100"}`}</p>
-          <p>{`视频：${"2"}/${"3"}`}</p>
-          <p>{`短语/句子：${"10"}/${"10"}`}</p>
-        </CardBody>
-        <Divider />
-        <CardFooter>
-          <Link
-            isExternal
-            showAnchorIcon
-            href="https://github.com/nextui-org/nextui"
-          >
-            进入您的计划
-          </Link>
-        </CardFooter>
-      </Card>
-      <Card className="basis-1/3">
-        <CardHeader className="flex gap-3">
-          {/* <Image
-          alt="nextui logo"
-          height={40}
-          radius="sm"
-          src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-          width={40}
-        /> */}
-          <div className="flex flex-col">
-            <p className="text-md">
-              <span>坚持度</span>
-              <Tooltip content="展示您的学习蓝图">
-                <span style={{ padding: "6px", backgroundColor: "#ccc" }}>
-                  ?
-                </span>
-              </Tooltip>
-            </p>
-            <p className="text-small text-default-500">展示您的学习蓝图</p>
-          </div>
-        </CardHeader>
-        <Divider />
-        <CardBody>{/* <Hotmap /> */}</CardBody>
-        <Divider />
-        <CardFooter>
-          <Link
-            isExternal
-            showAnchorIcon
-            href="https://github.com/nextui-org/nextui"
-          >
-            进入您的计划
-          </Link>
-        </CardFooter>
-      </Card>
-      <Card className="basis-1/3">
-        <CardHeader className="flex gap-3">
-          {/* <Image
-          alt="nextui logo"
-          height={40}
-          radius="sm"
-          src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-          width={40}
-        /> */}
-          <div className="flex flex-col">
-            <p className="text-md">
-              <span>学习进度</span>
-              <Tooltip content="该当日展示今天您的计划完成情况">
-                <span style={{ padding: "6px", backgroundColor: "#ccc" }}>
-                  ?
-                </span>
-              </Tooltip>
-            </p>
-            <p className="text-small text-default-500">
-              展示今天您的计划完成情况
-            </p>
-          </div>
-        </CardHeader>
-        <Divider />
-        <CardBody>
-          <p>{`单词：${"40"}/${"100"}`}</p>
-          <p>{`视频：${"2"}/${"3"}`}</p>
-          <p>{`短语/句子：${"10"}/${"10"}`}</p>
-        </CardBody>
-        <Divider />
-        <CardFooter>
-          <Link
-            isExternal
-            showAnchorIcon
-            href="https://github.com/nextui-org/nextui"
-          >
-            进入您的计划
-          </Link>
-        </CardFooter>
-      </Card>
+      <Grid spacing={2} container>
+        {[1, 2, 3, 4].map((item) => {
+          return (
+            <Grid>
+              <Card variant="outlined">{card}</Card>
+            </Grid>
+          );
+        })}
+      </Grid>
     </>
   );
 }

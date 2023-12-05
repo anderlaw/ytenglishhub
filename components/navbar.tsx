@@ -88,10 +88,10 @@ export const Navbar = observer(() => {
           <NavbarBrand as="li" className="gap-3 max-w-fit">
             <NextLink
               className="flex justify-start items-center gap-1"
-              href="/"
+              href="/app"
             >
               <Logo />
-              <p className="font-bold text-inherit">ACME</p>
+              <p className="font-bold text-inherit">YTEnglishHub</p>
             </NextLink>
           </NavbarBrand>
           <NavbarItem>
