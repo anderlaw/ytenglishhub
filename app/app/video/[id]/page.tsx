@@ -9,8 +9,13 @@ import CalHeatmap from "cal-heatmap";
 import "cal-heatmap/cal-heatmap.css";
 import { VideoCard } from "@/components/videocard";
 import { useEffect, useState } from "react";
-import { noobfn, whenYTIframeAPIReady } from "@/utils";
-import { addToWatchList, updateVideoProgress } from "@/request/user";
+import { getStdLocalDateString, noobfn, whenYTIframeAPIReady } from "@/utils";
+import {
+  addToWatchList,
+  updateUserWatchTime,
+  updateVideoProgress,
+} from "@/request/user";
+import { CachedWatchTime } from "@/types";
 type StateType = {
   player: any;
   subtitleEvents: Array<any>;
@@ -33,8 +38,32 @@ type PropType = {};
 //todo:记录视频播放进度。
 export default ({ params }: { params: { id: string } }) => {
   const [videoHeight, setVideoHeight] = useState<string>("auto");
-  
+
   useEffect(() => {
+    let seconds = 0;
+    try {
+      seconds += JSON.parse(
+        localStorage.getItem(CachedWatchTime) as any
+      );
+    } catch (e) {
+      seconds = 0;
+    }
+    const timer = setInterval(() => {
+      seconds++;
+    }, 1000);
+
+    const pageHideHandler = (event: any) => {
+      localStorage.setItem(CachedWatchTime, JSON.stringify(seconds));
+    };
+    window.addEventListener("pagehide", pageHideHandler, false);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("pagehide", pageHideHandler, false);
+      updateUserWatchTime(seconds).then(noobfn, noobfn);
+    };
+  }, []);
+  useEffect(() => {
+    //记录观看时长
     const width = parseFloat(
       getComputedStyle((document as any).querySelector("#player")).width
     );

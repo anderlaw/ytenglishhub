@@ -12,13 +12,40 @@ import Typography from "@mui/material/Typography";
 import "cal-heatmap/cal-heatmap.css";
 import Hotmap from "@/components/hotmap";
 import { useEffect, useState } from "react";
-import { whenCalHeatMapJsReady } from "@/utils";
+import { noobfn, whenCalHeatMapJsReady } from "@/utils";
 import { LineChart } from "@mui/x-charts/LineChart";
 import * as dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
+import { getAllWords, getUserWatchTimeByDate } from "@/request/user";
 dayjs.extend(localeData);
 export default function AboutPage() {
   const [cal, setCal] = useState<any>(null);
+  const [watchTime, setWatchTime] = useState<number>(0);
+  const [todayWords, setTodayWords] = useState<
+    Array<{
+      content: string;
+      mastery: number;
+      create_at: number;
+      update_at: number;
+    }>
+  >([]);
+  useEffect(() => {
+    getUserWatchTimeByDate().then((res) => {
+      if (res.status === 200 && res.data.Count > 0) {
+        setWatchTime(res.data.Items[0].watch_time);
+      }
+    }, noobfn);
+    getAllWords().then((res) => {
+      console.log(res);
+      if (res.status === 200) {
+        setTodayWords(res.data.Items);
+      }
+      // Count
+      // if (res.status === 200 && res.data.Items.length > 0) {
+      //   setWatchTime(res.data.Items[0].watch_time);
+      // }
+    }, noobfn);
+  }, []);
   useEffect(() => {
     whenCalHeatMapJsReady().then((res) => {
       setCal(new window.CalHeatmap());
@@ -117,11 +144,11 @@ export default function AboutPage() {
               >
                 观看时长
               </Typography>
-              <Typography component="p" variant="h5">
-                <Typography component="span" variant="h5" color="primary">
-                  10
-                </Typography>
-                hours。完成度（80%）
+              <Typography component="p" color="primary" variant="h5">
+                {watchTime}秒{/* todo:完成度 */}
+                {/* <Typography component="span" variant="h5" color="primary">
+                完成度（80%）
+                </Typography> */}
               </Typography>
             </CardContent>
           </Card>
@@ -171,13 +198,10 @@ export default function AboutPage() {
                 variant="h6"
                 component="div"
               >
-                New Words
+                新单词数
               </Typography>
-              <Typography component="p" variant="h5">
-                <Typography component="span" variant="h5" color="primary">
-                  10
-                </Typography>
-                个。完成度（80%）
+              <Typography component="p" variant="h5" color="primary">
+                {todayWords.length}个
               </Typography>
             </CardContent>
           </Card>

@@ -32,8 +32,10 @@ import { Logo } from "@/components/icons";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { createUser } from "@/request/user";
-import { useContext, default as React } from "react";
+import { useContext, default as React, useEffect } from "react";
 import { StoreContext } from "@/store";
+
+import { jwtDecode } from "jwt-decode";
 import {
   Avatar,
   Listbox,
@@ -42,6 +44,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
+import { AuthDataStorageKey } from "@/types";
 const firebaseConfig = {
   apiKey: "AIzaSyAVt6PxXtpuyg8yW8UX32K6oBLxcYQ9EWg",
   authDomain: "yt-english.firebaseapp.com",
@@ -81,6 +84,20 @@ export const Navbar = observer(() => {
 
   const store = useContext(StoreContext);
   const [isOpen, setIsOpen] = React.useState(false);
+  useEffect(() => {
+    try {
+      const auth_data = JSON.parse(
+        localStorage.getItem(AuthDataStorageKey) as any
+      );
+      const user = jwtDecode(auth_data.id_token) as any;
+      store.userStore.updateUserInfo({
+        username: user["cognito:username"],
+        email: user.email,
+      });
+    } catch (e) {
+      //todo: if there is no local data
+    }
+  }, []);
   return (
     <nav style={{ position: "fixed", top: 0, left: 0, right: 0 }}>
       <NextUINavbar maxWidth="xl">
@@ -94,61 +111,6 @@ export const Navbar = observer(() => {
               <p className="font-bold text-inherit">YTEnglishHub</p>
             </NextLink>
           </NavbarBrand>
-          <NavbarItem>
-            <Button
-              onClick={() => {
-                if (!store.userStore.loginStatus) {
-                  //登陆逻辑
-                  signInWithPopup(auth, provider)
-                    .then((result) => {
-                      // This gives you a Google Access Token. You can use it to access the Google API.
-                      const credential =
-                        GoogleAuthProvider.credentialFromResult(result);
-                      const token = credential!.accessToken;
-                      //token over
-
-                      // The signed-in user info.
-                      const user = result.user;
-                      const { photoURL, email, displayName } = user;
-                      //todo:api
-                      if (user) {
-                        createUser({
-                          photoURL: photoURL!,
-                          email: email!,
-                          displayName: displayName!,
-                        }).then((res) => {
-                          if (res.status === 200) {
-                            store.userStore.updateLoginStatus(true);
-                            store.userStore.updateUserInfo({
-                              photoURL: photoURL!,
-                              email: email!,
-                              username: displayName!,
-                            });
-                          }
-                        });
-                      }
-                      // IdP data available using getAdditionalUserInfo(result)
-                    })
-                    .catch((error) => {
-                      // Handle Errors here.
-                      const errorCode = error.code;
-                      const errorMessage = error.message;
-                      // The email of the user's account used.
-                      const email = error.customData.email;
-                      // The AuthCredential type that was used.
-                      const credential =
-                        GoogleAuthProvider.credentialFromError(error);
-                      // ...
-                      console.log(error);
-                    });
-                } else {
-                  alert("已经登陆");
-                }
-              }}
-            >
-              Sign in with Google
-            </Button>
-          </NavbarItem>
         </NavbarContent>
 
         <NavbarContent
@@ -165,7 +127,8 @@ export const Navbar = observer(() => {
           <Link isExternal href={siteConfig.links.github} aria-label="Github">
             <GithubIcon className="text-default-500" />
           </Link> */}
-            <ThemeSwitch />
+            {/* todo: 增加主题功能 */}
+            {/* <ThemeSwitch /> */}
           </NavbarItem>
           <NavbarItem className="hidden md:flex">
             <Popover
@@ -183,7 +146,7 @@ export const Navbar = observer(() => {
                   isBordered
                   showFallback
                   name={store.userStore.userInfo.username}
-                  color="default"
+                  color="secondary"
                   src={store.userStore.userInfo.photoURL}
                 />
               </PopoverTrigger>

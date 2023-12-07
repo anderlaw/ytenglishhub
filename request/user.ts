@@ -1,3 +1,4 @@
+import { getStdLocalDateString } from "@/utils";
 import { Http2ServerResponse } from "http2";
 import { axiosIns } from "./instance";
 
@@ -84,5 +85,32 @@ export const updateVideoProgress = (id: string, play_progress: number) => {
             id,
             play_progress
         }
+    })
+}
+//更新观看时长
+export const updateUserWatchTime = (watch_time_increment: number) => {
+    return axiosIns({
+        url: "/user/watch_time",
+        method: "POST",
+        data: {
+            watch_time: watch_time_increment,
+            date: getStdLocalDateString()
+        }
+    })
+}
+//获取用户观看时长
+export const getUserWatchTimeByDate = () => {
+    return axiosIns({
+        url: "/user/watch_time",
+        method: "GET",
+        params: {
+            date: getStdLocalDateString()
+        }
+    })
+}
+export const getAllWords = () => {
+    return axiosIns({
+        url: "/notebook/query",
+        method: "GET"
     })
 }

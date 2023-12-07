@@ -46,3 +46,7 @@ export const whenCalHeatMapJsReady = () => new Promise((res) => {
 
 
 export const noobfn = () => { }
+export const getStdLocalDateString = () => {
+    const localDate = new Date();
+    return `${localDate.getFullYear()}-${localDate.getMonth() + 1}-${localDate.getDate()}`;
+}

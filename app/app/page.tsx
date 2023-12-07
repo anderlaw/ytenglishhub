@@ -20,23 +20,12 @@ import "cal-heatmap/cal-heatmap.css";
 import Hotmap from "@/components/hotmap";
 import { useContext, useEffect } from "react";
 import { AuthDataStorageKey } from "@/types";
-import { jwtDecode } from "jwt-decode";
 import { observer } from "mobx-react-lite";
 import { StoreContext } from "@/store";
 function Main() {
   const store = useContext(StoreContext);
   useEffect(() => {
-    const auth_data = JSON.parse(
-      localStorage.getItem(AuthDataStorageKey) as any
-    );
-    if (auth_data) {
-      const user = jwtDecode(auth_data.id_token) as any;
-      console.log(user);
-      store.userStore.updateUserInfo({
-        username: user["cognito:username"],
-        email: user.email,
-      });
-    }
+
   }, []);
   return (
     <>
