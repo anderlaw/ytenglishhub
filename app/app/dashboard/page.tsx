@@ -131,19 +131,31 @@ export default function AboutPage() {
             xAxis={[
               {
                 data: [
-                  new Date(1701691888325),
-                  new Date(1701701888325),
-                  new Date(1701711888325),
+                  new Date("2023-1-1"),
+                  new Date("2023-1-2"),
+                  new Date("2023-1-3"),
+                  new Date("2023-1-4"),
+                  new Date("2023-1-5"),
+                  new Date("2023-1-6"),
+                  new Date("2023-1-7"),
+                  new Date("2023-1-8"),
+                  new Date("2023-1-9"),
                 ],
                 scaleType: "time",
                 valueFormatter(date) {
                   return date.toLocaleDateString();
                 },
+                tickMinStep: 3600 * 1000 * 24,
               },
             ]}
             yAxis={[{ id: "new-words", scaleType: "linear" }]}
             series={[
-              { yAxisKey: "new-words", data: [1, 2, 3], label: "观看时长" },
+              {
+                yAxisKey: "new-words",
+                data: [1, 2, 3, 1, 4, 6, 7, 8, 1],
+                label: "观看时长",
+                color: "rgb(89, 161, 79)",
+              },
             ]}
             width={500}
             height={300}
@@ -175,19 +187,31 @@ export default function AboutPage() {
             xAxis={[
               {
                 data: [
-                  new Date(1701691888325),
-                  new Date(1701701888325),
-                  new Date(1701711888325),
+                  new Date("2023-1-1"),
+                  new Date("2023-1-2"),
+                  new Date("2023-1-3"),
+                  new Date("2023-1-4"),
+                  new Date("2023-1-5"),
+                  new Date("2023-1-6"),
+                  new Date("2023-1-7"),
+                  new Date("2023-1-8"),
+                  new Date("2023-1-9"),
                 ],
                 scaleType: "time",
                 valueFormatter(date) {
                   return date.toLocaleDateString();
                 },
+                tickMinStep: 3600 * 1000 * 24,
               },
             ]}
-            yAxis={[{ id: "new-words", scaleType: "linear" }]}
+            yAxis={[{ id: "new-words" }]}
             series={[
-              { yAxisKey: "new-words", data: [1, 2, 3], label: "新单词" },
+              {
+                yAxisKey: "new-words",
+                data: [4, 2, 3, 4, 6, 8, 1, 6, 3],
+                label: "新单词",
+                color: "rgb(242, 142, 44)",
+              },
             ]}
             width={500}
             height={300}

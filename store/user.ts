@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx"
 export interface IUserInfo {
-    displayName: string,
+    username: string,
     email: string,
-    photoURL: string
+    photoURL?: string
 }
 export class UserStore {
     constructor() {
@@ -11,7 +11,7 @@ export class UserStore {
     userInfo: IUserInfo = {
         email: '',
         photoURL: '',
-        displayName: ''
+        username: ''
     };
     loginStatus: boolean = false
     get getLoginStatus() {

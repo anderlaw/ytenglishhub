@@ -45,3 +45,4 @@ export const whenCalHeatMapJsReady = () => new Promise((res) => {
 
 
 
+export const noobfn = () => { }

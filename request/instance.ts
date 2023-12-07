@@ -1,10 +1,12 @@
+import { AuthDataStorageKey } from "@/types";
 import axios from "axios";
 export const axiosIns = axios.create({
-    baseURL: "/",
+    baseURL: "https://9gc3ha01gb.execute-api.us-east-1.amazonaws.com/dev",
     //60s
     timeout: 60 * 1000,
     headers: {
-        "Content-Type": 'Application/json'
+        "Content-Type": 'Application/json',
+        'auth-header': JSON.parse(localStorage.getItem(AuthDataStorageKey) || "null")?.id_token
     }
 });
 // Add a request interceptor
@@ -27,6 +29,7 @@ axiosIns.interceptors.response.use(function (response: any) {
     //遇到401的状态后删除本地token并重置登陆状态
     if (error.response.status === 401) {
         // store.logout()
+        alert('token失效')
     }
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error

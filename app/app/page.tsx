@@ -3,6 +3,7 @@ import { title } from "@/components/primitives";
 import { Button } from "@nextui-org/button";
 // BsFillQuestionCircleFill
 import Call from "react-calendar-heatmap";
+import decode from "jwt-decode";
 import {
   Card,
   CardHeader,
@@ -17,9 +18,29 @@ import CalHeatmap from "cal-heatmap";
 // Optionally import the CSS
 import "cal-heatmap/cal-heatmap.css";
 import Hotmap from "@/components/hotmap";
-export default function AboutPage() {
+import { useContext, useEffect } from "react";
+import { AuthDataStorageKey } from "@/types";
+import { jwtDecode } from "jwt-decode";
+import { observer } from "mobx-react-lite";
+import { StoreContext } from "@/store";
+function Main() {
+  const store = useContext(StoreContext);
+  useEffect(() => {
+    const auth_data = JSON.parse(
+      localStorage.getItem(AuthDataStorageKey) as any
+    );
+    if (auth_data) {
+      const user = jwtDecode(auth_data.id_token) as any;
+      console.log(user);
+      store.userStore.updateUserInfo({
+        username: user["cognito:username"],
+        email: user.email,
+      });
+    }
+  }, []);
   return (
     <>
+      <span>username: {store.userStore.userInfo.username}</span>
       <Card className="basis-1/3">
         <CardHeader className="flex gap-3">
           {/* <Image
@@ -82,9 +103,7 @@ export default function AboutPage() {
           </div>
         </CardHeader>
         <Divider />
-        <CardBody>
-          {/* <Hotmap /> */}
-        </CardBody>
+        <CardBody>{/* <Hotmap /> */}</CardBody>
         <Divider />
         <CardFooter>
           <Link
@@ -139,3 +158,4 @@ export default function AboutPage() {
     </>
   );
 }
+export default observer(Main);

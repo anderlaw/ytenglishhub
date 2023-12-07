@@ -16,6 +16,10 @@ import {
   Link,
   Button,
 } from "@nextui-org/react";
+
+import { useEffect } from "react";
+export const loginSignupLink =
+  "https://ytenglishhub.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=7id87glt4q3pl65c29ghqu3ff3&response_type=token&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fprepare";
 export default function Home() {
   return (
     <>
@@ -37,7 +41,12 @@ export default function Home() {
         </NavbarContent>
         <NavbarContent justify="end">
           <NavbarItem>
-            <Button as={Link} color="primary" href="#" variant="flat">
+            <Button
+              as={Link}
+              color="primary"
+              href={loginSignupLink}
+              variant="flat"
+            >
               Sign Up
             </Button>
           </NavbarItem>
@@ -113,9 +122,7 @@ export default function Home() {
         <Grid xs={8}></Grid>
       </Grid> */}
       </main>
-      <footer className="text-center mt-20 my-10">
-        all rights reserved
-      </footer>
+      <footer className="text-center mt-20 my-10">all rights reserved</footer>
     </>
   );
 }

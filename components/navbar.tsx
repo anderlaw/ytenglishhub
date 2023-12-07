@@ -82,7 +82,7 @@ export const Navbar = observer(() => {
   const store = useContext(StoreContext);
   const [isOpen, setIsOpen] = React.useState(false);
   return (
-    <nav style={{ position: "fixed",top:0,left:0,right:0, }}>
+    <nav style={{ position: "fixed", top: 0, left: 0, right: 0 }}>
       <NextUINavbar maxWidth="xl">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
@@ -122,7 +122,7 @@ export const Navbar = observer(() => {
                             store.userStore.updateUserInfo({
                               photoURL: photoURL!,
                               email: email!,
-                              displayName: displayName!,
+                              username: displayName!,
                             });
                           }
                         });
@@ -182,7 +182,7 @@ export const Navbar = observer(() => {
                   }}
                   isBordered
                   showFallback
-                  name={store.userStore.userInfo.displayName}
+                  name={store.userStore.userInfo.username}
                   color="default"
                   src={store.userStore.userInfo.photoURL}
                 />

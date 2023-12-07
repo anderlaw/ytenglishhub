@@ -15,25 +15,23 @@ import React, { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 //   import { useTranslation } from "react-i18next";
 export const VideoCard: React.FC<IVideoItem> = ({ id, title, thumbnail }) => {
-  const router = useRouter()
+  const router = useRouter();
   // const navigate = useNavigate();
   // const { t } = useTranslation();
-  // const [validCoverURL, setValidCoverURL] = useState<string>("");
+  const [validCoverURL, setValidCoverURL] = useState<string>("");
   //句子中选中的单词，不同的UI样式
-  // useEffect(() => {
-  //   const img = document.createElement("img");
-  //   img.onload = (e) => {
-  //     if (img.width === 120 && img.height === 90) {
-  //       //加载失败
-  //       setValidCoverURL(
-  //         `https://img.youtube.com/vi/${video_id}/hqdefault.jpg`
-  //       );
-  //     } else {
-  //       setValidCoverURL(`https://img.youtube.com/vi/${video_id}/hq720.jpg`);
-  //     }
-  //   };
-  //   img.src = `https://img.youtube.com/vi/${video_id}/hq720.jpg`;
-  // }, [video_id]);
+  useEffect(() => {
+    const img = document.createElement("img");
+    img.onload = (e) => {
+      if (img.width === 120 && img.height === 90) {
+        //加载失败
+        setValidCoverURL(`https://img.youtube.com/vi/${id}/hqdefault.jpg`);
+      } else {
+        setValidCoverURL(`https://img.youtube.com/vi/${id}/hq720.jpg`);
+      }
+    };
+    img.src = `https://img.youtube.com/vi/${id}/hq720.jpg`;
+  }, [id]);
   return (
     <Box
       sx={{
@@ -41,7 +39,7 @@ export const VideoCard: React.FC<IVideoItem> = ({ id, title, thumbnail }) => {
         cursor: "pointer",
       }}
       onClick={() => {
-        router.push(`/app/video/${'ACucrVBq8Yg'}`)
+        router.push(`/app/video/${id}`);
       }}
     >
       <Box
@@ -55,20 +53,9 @@ export const VideoCard: React.FC<IVideoItem> = ({ id, title, thumbnail }) => {
           //   "linear-gradient(#5c5d5c 0%, rgba(0,0,0,0) 30%,rgba(0,0,0,0) 80%, #5c5d5c 100%)",
         }}
       >
-        <img
-          // style={{ position: "relative", zIndex: -1 }}
-          src={thumbnail}
-          width="100%"
-        />
-        <LinearProgress variant="determinate" color="secondary" value={50} />
-        {/* <TaskAltIcon
-          color="success"
-          sx={{
-            position: "absolute",
-            top: "4px",
-            right: "4px",
-          }}
-        /> */}
+        <img src={validCoverURL} width="100%" />
+        {/*  todo: 视频进度  */}
+        {/* <LinearProgress variant="determinate" color="secondary" value={50} /> */}
       </Box>
       <Typography gutterBottom variant="body1" component="h3">
         {title}

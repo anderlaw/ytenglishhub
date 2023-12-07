@@ -3,24 +3,14 @@ import { title } from "@/components/primitives";
 import { Button } from "@nextui-org/button";
 // BsFillQuestionCircleFill
 import Call from "react-calendar-heatmap";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Divider,
-  Link,
-  Image,
-  Tooltip,
-} from "@nextui-org/react";
 import { Unstable_Grid2 as Grid } from "@mui/material";
 import CalHeatmap from "cal-heatmap";
 // Optionally import the CSS
 import "cal-heatmap/cal-heatmap.css";
-import Hotmap from "@/components/hotmap";
 import { VideoCard } from "@/components/videocard";
 import { useEffect, useState } from "react";
-import { whenYTIframeAPIReady } from "@/utils";
+import { noobfn, whenYTIframeAPIReady } from "@/utils";
+import { addToWatchList, updateVideoProgress } from "@/request/user";
 type StateType = {
   player: any;
   subtitleEvents: Array<any>;
@@ -37,9 +27,13 @@ type StateType = {
   programming_paused: boolean;
 };
 type PropType = {};
+// const addVideo = (videoInfo) => {
+//   return
+// }
+//todo:记录视频播放进度。
 export default ({ params }: { params: { id: string } }) => {
   const [videoHeight, setVideoHeight] = useState<string>("auto");
-
+  
   useEffect(() => {
     const width = parseFloat(
       getComputedStyle((document as any).querySelector("#player")).width
@@ -48,7 +42,7 @@ export default ({ params }: { params: { id: string } }) => {
     setVideoHeight((width * 9) / 16 + "px");
 
     whenYTIframeAPIReady().then((res) => {
-      new window.YT.Player("player", {
+      const player = new window.YT.Player("player", {
         height: "360",
         width: "640",
         videoId: params.id,
@@ -60,7 +54,15 @@ export default ({ params }: { params: { id: string } }) => {
           wmode: "opaque",
         },
         events: {
-          onReady: (event: any) => {},
+          onReady: (event: any) => {
+            const videoData = player.getVideoData();
+            console.log(player.video_id, title);
+            addToWatchList({
+              title: videoData.title,
+              id: videoData.video_id,
+              thumbnail: "xxxx",
+            }).catch(noobfn);
+          },
           onStateChange: (event: any) => {
             // if (event.data === window.YT.PlayerState.PLAYING) {
             //   this.updateAutoProgressTrackState(true);
@@ -72,7 +74,6 @@ export default ({ params }: { params: { id: string } }) => {
       });
     });
   }, []);
-
   return (
     <>
       <Grid container spacing={2}>

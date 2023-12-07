@@ -6,5 +6,8 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export interface IVideoItem {
   title: string;
   id: string;
-  thumbnail: string;
+  thumbnail?: string;
 }
+
+export type IAuthDataKey = "id_token" | "token_type" | "access_token" | "expires_in";
+export const AuthDataStorageKey = 'YTEnglish-S-Auth'
