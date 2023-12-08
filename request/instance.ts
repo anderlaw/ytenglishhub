@@ -1,3 +1,4 @@
+'use client'
 import { AuthDataStorageKey } from "@/types";
 import axios from "axios";
 export const axiosIns = axios.create({
@@ -6,7 +7,8 @@ export const axiosIns = axios.create({
     timeout: 60 * 1000,
     headers: {
         "Content-Type": 'Application/json',
-        'auth-header': JSON.parse(localStorage.getItem(AuthDataStorageKey) || "null")?.id_token
+        //add typeof fix: window or localStorage is not defined in nextjs server rendering
+        'auth-header': typeof window !== 'undefined' && JSON.parse(localStorage.getItem(AuthDataStorageKey) || "null")?.id_token
     }
 });
 // Add a request interceptor
@@ -27,11 +29,12 @@ axiosIns.interceptors.response.use(function (response: any) {
 }, function (error: { response: { status: number; }; }) {
     // const store = initializeStore()
     //遇到401的状态后删除本地token并重置登陆状态
-    if (error.response.status === 401) {
+    console.log(error)
+    if (error.response.status != 200) {
         // store.logout()
-        alert('token失效')
+        console.error(error)
     }
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
-    return Promise.reject(error);
+    // return Promise.reject(error);
 });

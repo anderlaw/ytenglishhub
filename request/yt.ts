@@ -10,17 +10,6 @@ export const getChannelInfo = (channel_link: string) => {
         }
     })
 }
-export const getVideoInfo = (video_link: string) => {
-    return axiosIns({
-        //todo:replace it
-        url: "/api/yt/video",
-        method: "get",
-        params: {
-            video_link
-        }
-    })
-
-}
 export const getPlayListById = (params: {
     playlist_id: string,
     start_num?: number,

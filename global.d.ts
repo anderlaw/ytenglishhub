@@ -12,6 +12,7 @@ declare interface Window {
     LegendLite: any,
     // over
     dayjs:any
+    
 }
 declare interface Location {
     href: any

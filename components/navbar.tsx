@@ -128,7 +128,7 @@ export const Navbar = observer(() => {
             <GithubIcon className="text-default-500" />
           </Link> */}
             {/* todo: 增加主题功能 */}
-            {/* <ThemeSwitch /> */}
+            <ThemeSwitch />
           </NavbarItem>
           <NavbarItem className="hidden md:flex">
             <Popover

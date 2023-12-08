@@ -48,7 +48,7 @@ export const VideoCard: React.FC<IVideoItem> = ({ id, title, thumbnail }) => {
           marginBottom: "20px",
           overflow: "hidden",
           position: "relative",
-
+          zIndex: -1,
           // backgroundImage:
           //   "linear-gradient(#5c5d5c 0%, rgba(0,0,0,0) 30%,rgba(0,0,0,0) 80%, #5c5d5c 100%)",
         }}

@@ -41,10 +41,18 @@ export default function AboutPage() {
   }, []);
   return (
     <>
-      <Grid spacing={2} container>
+      <Grid
+        container
+        spacing={2}
+        paddingX={2}
+        sx={{
+          //fix: unnecessary scroll-row-bar
+          width: "100%",
+        }}
+      >
         {videoList.map((item) => {
           return (
-            <Grid key={item.id}>
+            <Grid key={item.id} xs={3}>
               <VideoCard {...item} />
             </Grid>
           );
