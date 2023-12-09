@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite";
 import { StoreContext } from "@/store";
 import { AiFillDelete } from "react-icons/ai";
 import { AiOutlinePlus } from "react-icons/ai";
+import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import {
   Avatar,
   Card,
@@ -31,6 +32,62 @@ import {
 } from "@nextui-org/react";
 import { IResource } from "@/request/user";
 import { useRouter } from "next/navigation";
+import { Box, Typography } from "@mui/material";
+const testDicData = [
+  {
+    word: "skill",
+    prs: null,
+    fl: "verb",
+    shortdef: ["to make a difference : matter, avail"],
+  },
+  {
+    word: "skill",
+    prs: {
+      label: "ˈskil",
+      audio_url:
+        "https://media.merriam-webster.com/audio/prons/en/us/mp3/s/skill001.mp3",
+    },
+    fl: "noun",
+    shortdef: [
+      "the ability to use one's knowledge effectively and readily in execution or performance",
+      "dexterity or coordination especially in the execution of learned physical tasks",
+      "a learned power of doing something competently : a developed aptitude or ability",
+    ],
+  },
+  {
+    word: "people skills",
+    prs: null,
+    fl: "noun",
+    shortdef: [
+      "the ability to work with or talk to other people in an effective and friendly way",
+    ],
+  },
+  {
+    word: "de-skill",
+    prs: {
+      label: "ˌdē-ˈskil",
+      audio_url:
+        "https://media.merriam-webster.com/audio/prons/en/us/mp3/d/de_ski01.mp3",
+    },
+    fl: "verb",
+    shortdef: [
+      "to reduce the level of skill needed for (a job)",
+      "to reduce the level of skill needed for a job by (a worker)",
+    ],
+  },
+  {
+    word: "sub*skill",
+    prs: {
+      label: "ˈsəb-ˌskil",
+      audio_url:
+        "https://media.merriam-webster.com/audio/prons/en/us/mp3/s/subskill_1.mp3",
+    },
+    fl: "noun",
+    shortdef: [
+      "a skill that is part of and necessary to another more complex skill",
+    ],
+  },
+] as any;
 export default observer(function BlogPage() {
   const [resourceLoading, setResourceLoading] = useState<boolean>(true);
   const [resource, setResource] = useState<any>([]);
@@ -45,7 +102,7 @@ export default observer(function BlogPage() {
     // });
   }, []);
   const store = useContext(StoreContext);
-  const router = useRouter()
+  const router = useRouter();
   const [type, setType] = useState<string>("video");
   const [linkText, setLinkText] = useState<string>("");
   return (
@@ -81,8 +138,8 @@ export default observer(function BlogPage() {
           onClick={() => {
             if (type === "video") {
               const url = new URL(linkText);
-              const videoId = url.searchParams.get('v')
-              router.push('/app/video/'+videoId)
+              const videoId = url.searchParams.get("v");
+              router.push("/app/video/" + videoId);
             }
           }}
         >

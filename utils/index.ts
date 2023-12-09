@@ -50,3 +50,9 @@ export const getStdLocalDateString = () => {
     const localDate = new Date();
     return `${localDate.getFullYear()}-${localDate.getMonth() + 1}-${localDate.getDate()}`;
 }
+
+export const safeClearInterval = (timer: any) => {
+    if (typeof window !== 'undefined') {
+        window.clearInterval(timer)
+    }
+}
