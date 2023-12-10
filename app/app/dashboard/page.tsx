@@ -26,6 +26,8 @@ dayjs.extend(localeData);
 dayjs.extend(duration);
 export default function AboutPage() {
   const [cal, setCal] = useState<any>(null);
+  //今日观看时长
+  const [watch_timeToday, setWatch_timeToday] = useState<number>(0);
   //所有观看时长
   const [watch_timeLineXDate, setWatch_timeLineXDate] = useState<Array<string>>(
     []
@@ -45,7 +47,7 @@ export default function AboutPage() {
   //所有单词
   const [wordsLineXData, setWordsLineXData] = useState<Array<string>>([]);
   const [wordsLineYData, setWordsLineYData] = useState<Array<number>>([]);
-  //所有观看时长
+  //获取数据
   useEffect(() => {
     getUserAllWatchTime().then((res) => {
       if (res.status === 200 && res.data.Count > 0) {
@@ -58,8 +60,15 @@ export default function AboutPage() {
         res.data.Items.forEach((item: any) => {
           tmp_timeLineXDate.push(item.category.split("#")[1]);
           tmp_timeLineYDate.push(item.watch_time);
-        });
 
+          //今日的数据
+          if (getStdLocalDateString() === item.category.split("#")[1]) {
+            setWatch_timeToday(item.watch_time);
+          }
+        });
+        console.log(tmp_timeLineXDate);
+        console.log(tmp_timeLineYDate);
+        
         setWatch_timeLineXDate(tmp_timeLineXDate);
         setWatch_timeLineYDate(tmp_timeLineYDate);
       }
@@ -237,11 +246,11 @@ export default function AboutPage() {
             <Typography component="p" color="primary" variant="h5">
               {dayjs
                 .duration({
-                  seconds: watch_timeLineYDate[watch_timeLineYDate.length - 1],
+                  seconds: watch_timeToday,
                 })
-                .asHours()
-                .toFixed(2)}
-              小时
+                .asMinutes()
+                .toFixed(0)}
+              分钟
               {/* todo:完成度 */}
               {/* <Typography component="span" variant="h5" color="primary">
                 完成度（80%）

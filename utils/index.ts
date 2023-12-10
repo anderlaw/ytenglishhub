@@ -1,5 +1,6 @@
 // import { exec } from 'child_process'
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import dayjs from "dayjs";
 export const runCommand = (command: string) => {
     return new Promise((res, rej) => {
         // exec(
@@ -47,8 +48,7 @@ export const whenCalHeatMapJsReady = () => new Promise((res) => {
 
 export const noobfn = () => { }
 export const getStdLocalDateString = (timestamp?: number) => {
-    const localDate = timestamp ? new Date(timestamp) : new Date();
-    return `${localDate.getFullYear()}-${localDate.getMonth() + 1}-${localDate.getDate()}`;
+    return dayjs(timestamp ? new Date(timestamp) : new Date()).format('YYYY-MM-DD');
 }
 
 export const safeClearInterval = (timer: any) => {
