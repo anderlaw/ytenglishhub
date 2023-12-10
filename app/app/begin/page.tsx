@@ -87,7 +87,7 @@ export default observer(function Main() {
               try {
                 const url = new URL(linkText);
                 const videoId = url.searchParams.get("v");
-                router.push("/app/video/" + videoId);
+                router.push("/app/video?video_id=" + videoId);
               } catch (e) {
                 alert("请输入有效的视频链接");
               }

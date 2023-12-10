@@ -41,7 +41,7 @@ export const VideoCard: React.FC<IVideoItem> = ({ id, title, thumbnail }) => {
       }}
       onClick={() => {
         // console.log(router.)
-        router.push(`/app/video/${id}?last_page=${location.pathname}`);
+        router.push(`/app/video?video_id=${id}&last_page=${location.pathname}`);
       }}
     >
       <Box

@@ -1,7 +1,7 @@
-import { IDictData } from "@/app/app/video/[id]/page";
 import { Box, Typography } from "@mui/material";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { playAudioByURL } from "@/utils";
+import { IDictData } from "@/types/dict";
 export const DictDisplay = (props: { dictData: IDictData }) => {
   const { dictData } = props;
   return (

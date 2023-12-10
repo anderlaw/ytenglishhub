@@ -74,7 +74,11 @@ export default function Home() {
 
         <NavbarContent justify="end">
           <NavbarItem>
-            <Button color="primary" href={loginSignupLink} variant="contained">
+            <Button
+              color="primary"
+              href={process.env.NEXT_PUBLIC_singup_url}
+              variant="contained"
+            >
               Sign Up
             </Button>
           </NavbarItem>

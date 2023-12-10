@@ -42,12 +42,7 @@ import {
   queryNotebook,
 } from "@/request/dictionary";
 import { DictDisplay } from "@/components/dictDisplay";
-export type IDictData = Array<{
-  word: string;
-  prs: { label: string | null; audio_url: string | null } | null;
-  fl: string;
-  shortdef: string;
-}>;
+import { IDictData } from "@/types/dict";
 const LeftPartAnchor = styled.span((props) => ({
   borderRight: "2px dotted #ccc",
   cursor: "text",
