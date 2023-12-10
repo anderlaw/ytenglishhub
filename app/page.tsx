@@ -62,8 +62,6 @@ const CardComponent = (props: {
     </Card>
   );
 };
-const loginSignupLink =
-  "https://ytenglishhub.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=7id87glt4q3pl65c29ghqu3ff3&response_type=token&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fprepare";
 export default function Home() {
   return (
     <>
@@ -230,6 +228,7 @@ export default function Home() {
               sx={{ marginLeft: "20px" }}
               color="primary"
               variant="outlined"
+              href={process.env.NEXT_PUBLIC_singup_url}
             >
               Sign Up
             </Button>

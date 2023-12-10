@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-	name: "YTenglishHub",
-	description: "-------------",
+	name: "YTenglishHub - Improve your English learning experience",
+	description: "Improve your English listening and speaking skills with YouTube videos",
 	navItems: [
 		{
 			label: "Home",
