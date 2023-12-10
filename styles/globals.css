@@ -28,9 +28,6 @@ body{
     background-color: orangered;
     color:#fff;
   }
-  .sub-container.user-selecting .sub-word{
-    cursor: none;
-}
 .sub-container.user-selecting .sub-word:hover{
     background-color: unset;
 }
@@ -58,9 +55,9 @@ body{
 
 
   ::selection {
-    color: red;
-    background: yellow;
-  }
+    color: white;
+    background: #7827c8;
+}
 
   #quiz-input{
     font-size: 36px;

@@ -2,86 +2,27 @@
 import {
   Navbar as NextUINavbar,
   NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
 } from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
 import { Kbd } from "@nextui-org/kbd";
-import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
 
-import { link as linkStyles } from "@nextui-org/theme";
-
-import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
-import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
-  SearchIcon,
-} from "@/components/icons";
+import { SearchIcon } from "@/components/icons";
 
-import { Logo } from "@/components/icons";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { initializeApp } from "firebase/app";
-import { createUser } from "@/request/user";
 import { useContext, default as React, useEffect } from "react";
 import { StoreContext } from "@/store";
 
 import { jwtDecode } from "jwt-decode";
-import {
-  Avatar,
-  Listbox,
-  ListboxItem,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@nextui-org/react";
+
+// import Avatar from "@mui/material/Avatar";
+import { Avatar } from "@nextui-org/react";
 import { AuthDataStorageKey } from "@/types";
-const firebaseConfig = {
-  apiKey: "AIzaSyAVt6PxXtpuyg8yW8UX32K6oBLxcYQ9EWg",
-  authDomain: "yt-english.firebaseapp.com",
-  projectId: "yt-english",
-  storageBucket: "yt-english.appspot.com",
-  messagingSenderId: "640780922157",
-  appId: "1:640780922157:web:be90bbdef4ab43be0cb7a4",
-  measurementId: "G-8XGLVWDQSR",
-};
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
-const provider = new GoogleAuthProvider();
-const auth = getAuth();
 export const Navbar = observer(() => {
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
-
   const store = useContext(StoreContext);
   const [isOpen, setIsOpen] = React.useState(false);
   useEffect(() => {
@@ -97,7 +38,7 @@ export const Navbar = observer(() => {
     } catch (e) {
       //todo: if there is no local data
     }
-  }, []);
+  }, [store.userStore]);
   return (
     <nav style={{ position: "fixed", top: 0, left: 0, right: 0 }}>
       <NextUINavbar maxWidth="xl">
@@ -107,8 +48,13 @@ export const Navbar = observer(() => {
               className="flex justify-start items-center gap-1"
               href="/app"
             >
-              <Logo />
-              <p className="font-bold text-inherit">YTEnglishHub</p>
+              <img
+                style={{
+                  height: "40px",
+                }}
+                src="/images/logo3.png"
+                alt="logo image"
+              />
             </NextLink>
           </NavbarBrand>
         </NavbarContent>
@@ -128,7 +74,7 @@ export const Navbar = observer(() => {
             <GithubIcon className="text-default-500" />
           </Link> */}
             {/* todo: 增加主题功能 */}
-            <ThemeSwitch />
+            {/* <ThemeSwitch /> */}
           </NavbarItem>
           <NavbarItem className="hidden md:flex">
             <Avatar
@@ -139,9 +85,12 @@ export const Navbar = observer(() => {
               isBordered
               showFallback
               name={store.userStore.userInfo.username}
-              color="secondary"
+              color="primary"
               src={store.userStore.userInfo.photoURL}
             />
+            {/* <Avatar sx={{ width: 46, height: 46, bgcolor: deepPurple[400] }}>
+              {store.userStore.userInfo.username}
+            </Avatar> */}
             {/* <Popover
               isOpen={isOpen}
               onOpenChange={(open) => {

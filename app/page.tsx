@@ -7,18 +7,62 @@ import { GithubIcon } from "@/components/icons";
 import Head from "next/head";
 import Script from "next/script";
 import Grid from "@mui/material/Unstable_Grid2";
-import { Box } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
+import {
+  Quiz as QuizIcon,
+  Radio as RadioIcon,
+  CollectionsBookmark as BookIcon,
+  Search as SearchIcon,
+} from "@mui/icons-material";
 import {
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   Link,
-  Button,
 } from "@nextui-org/react";
 
 import { useEffect } from "react";
-export const loginSignupLink =
+const CardComponent = (props: {
+  mediaURL: string;
+  title: string;
+  subtitle: string;
+}) => {
+  const { mediaURL, title, subtitle } = props;
+  return (
+    <Card>
+      <CardMedia
+        component="img"
+        alt="green iguana"
+        sx={{
+          height: "160px",
+        }}
+        image={mediaURL}
+      />
+      <CardContent>
+        <Typography
+          fontSize={20}
+          component="div"
+          fontWeight={600}
+          textAlign="center"
+        >
+          {title}
+        </Typography>
+        {/* <Typography variant="body2" color="text.secondary">
+          {subtitle}
+        </Typography> */}
+      </CardContent>
+    </Card>
+  );
+};
+const loginSignupLink =
   "https://ytenglishhub.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=7id87glt4q3pl65c29ghqu3ff3&response_type=token&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fprepare";
 export default function Home() {
   return (
@@ -27,102 +71,170 @@ export default function Home() {
         <NavbarBrand>
           <p className="font-bold text-inherit">YTEnglishHub</p>
         </NavbarBrand>
-        <NavbarContent className="hidden sm:flex gap-4" justify="center">
-          <NavbarItem>
-            <Link color="foreground" href="#">
-              Use Guide
-            </Link>
-          </NavbarItem>
-          <NavbarItem isActive>
-            <Link href="#" aria-current="page">
-              Features
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
+
         <NavbarContent justify="end">
           <NavbarItem>
-            <Button
-              as={Link}
-              color="primary"
-              href={loginSignupLink}
-              variant="flat"
-            >
+            <Button color="primary" href={loginSignupLink} variant="contained">
               Sign Up
             </Button>
           </NavbarItem>
         </NavbarContent>
       </Navbar>
       <main>
-        <div className="flex justify-evenly items-center my-20">
-          <h4 className="font-bold text-large">
-            更干净的界面，
+        <Box className="flex flex-col my-20">
+          <Typography fontSize={30} fontWeight={600} textAlign="center" sx={{}}>
+            A Clean App Helps You
             <br />
-            干净的英语学习视听体验
-          </h4>
-          <img src="https://nextui.org/images/card-example-5.jpeg" />
-        </div>
-        <div className="flex justify-evenly items-center my-20">
-          <img src="https://nextui.org/images/card-example-5.jpeg" />
-          <h4 className="font-bold text-large">
-            强大的图表UI
-            <br />
-            方便您回顾自己的一天所学
-          </h4>
-        </div>
-        <div className="flex justify-evenly items-center my-20">
-          <div>
-            <h4 className="font-bold text-large">
-              加强版的字幕组件
-              <br />
-              让您的学习更轻松更高效
-            </h4>
-            <ul>
-              <ol>字典查阅功能</ol>
-              <li>单词标记、收藏功能</li>
-              <li>句子复读功能</li>
-            </ul>
-          </div>
-
-          <img src="https://nextui.org/images/card-example-5.jpeg" />
-        </div>
-        <div className="flex justify-evenly items-center my-20">
-          <img src="https://nextui.org/images/card-example-5.jpeg" />
-          <h4 className="font-bold text-large">
-            清爽、高效的单词卡片
-            <br />
-            让您轻松、高效地复习单词
-          </h4>
-        </div>
-        <div className="flex justify-around">
-          <div>
-            <span>Start it for free.&nbsp;</span>
-            <Button color="primary">Sign Up</Button>
-          </div>
-        </div>
-        {/* <Grid container spacing={2} sx={{
-        marginTop:'40px'
-      }}>
-        <Grid xs={6} sx={{ textAlign: "right" }}>
-          
-        </Grid>
-        <Grid
-          xs={6}
+            learn english with
+            <Typography
+              fontSize={30}
+              fontWeight={600}
+              sx={{
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                WebkitBoxDecorationBreak: "clone",
+                backgroundColor: "red",
+                backgroundImage:
+                  "linear-gradient(to left, #17acff 23.45%, #ff68f0 73.52%, rgba(201, 68, 100, 0.7) 120.73%);",
+              }}
+              component="span"
+            >
+              &nbsp;Youtube&copy;&nbsp;Videos
+            </Typography>
+          </Typography>
+          <Box sx={{ textAlign: "center", marginTop: "50px" }}>
+            <img
+              style={{
+                display: "inline-block",
+                boxShadow: "0 1px 3px 1px rgba(0,0,0,.14)",
+                borderRadius: "6px",
+                width: "70%",
+              }}
+              width="700"
+              src="/images/banner1.png"
+              alt="banner"
+            />
+          </Box>
+        </Box>
+        <Typography
+          fontSize={30}
+          component="div"
+          fontWeight={600}
+          textAlign="center"
+          className="my-20"
+        >
+          Many Easy-to-use
+          <Typography
+            fontSize={30}
+            fontWeight={600}
+            sx={{
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              WebkitBoxDecorationBreak: "clone",
+              backgroundColor: "red",
+              backgroundImage:
+                "linear-gradient(to left, #17acff 23.45%, #ff68f0 73.52%, rgba(201, 68, 100, 0.7) 120.73%);",
+            }}
+            component="span"
+          >
+            &nbsp;Features&nbsp;
+          </Typography>
+        </Typography>
+        <Box
           sx={{
-            // textAlign: "center",
+            width: "70%",
+            margin: "20px auto",
           }}
         >
-          <img
-            style={{
-              display: "inline-block",
-            }}
-            src="https://nextui.org/images/card-example-5.jpeg"
-          />
-        </Grid>
-        <Grid xs={4}></Grid>
-        <Grid xs={8}></Grid>
-      </Grid> */}
+          <Grid container spacing={4}>
+            <Grid xs={3}>
+              <CardComponent
+                title="Dictionary."
+                subtitle="The authoritative dictionary allows you to look up new words at any time"
+                mediaURL="/images/dictionary.png"
+              />
+            </Grid>
+            <Grid xs={3}>
+              <CardComponent
+                title="Notebook."
+                subtitle="Easily record new words you encounter into your notebook"
+                mediaURL="/images/notebook.png"
+              />
+            </Grid>
+            <Grid xs={3}>
+              <CardComponent
+                title="Radio assistant"
+                subtitle="Read a sentence over and over again until you understand it."
+                mediaURL="/images/radio.png"
+              />
+            </Grid>
+            <Grid xs={3}>
+              <CardComponent
+                title="Word Quiz."
+                subtitle="Interesting Quiz help you master words effectively"
+                mediaURL="/images/quiz.png"
+              />
+            </Grid>
+          </Grid>
+        </Box>
+        <Box className="flex flex-col my-20">
+          <Typography fontSize={30} fontWeight={600} textAlign="center" sx={{}}>
+            Useful
+            <Typography
+              fontSize={30}
+              fontWeight={600}
+              sx={{
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                WebkitBoxDecorationBreak: "clone",
+                backgroundColor: "red",
+                backgroundImage:
+                  "linear-gradient(to left, #17acff 23.45%, #ff68f0 73.52%, rgba(201, 68, 100, 0.7) 120.73%);",
+              }}
+              component="span"
+            >
+              &nbsp;Statistics&nbsp;
+            </Typography>
+            help you learn more
+          </Typography>
+          <Box sx={{ textAlign: "center", marginTop: "50px" }}>
+            <img
+              style={{
+                display: "inline-block",
+                boxShadow: "0 1px 3px 1px rgba(0,0,0,.14)",
+                borderRadius: "6px",
+                width: "70%",
+              }}
+              width="700"
+              src="/images/banner2.png"
+              alt="banner"
+            />
+          </Box>
+        </Box>
+        <div className="flex justify-around">
+          <div>
+            <Typography
+              fontSize={20}
+              component="span"
+              fontWeight={400}
+              textAlign="center"
+            >
+              Start To Use Now, It is Free.
+            </Typography>
+            <span>&nbsp;</span>
+            <Button
+              sx={{ marginLeft: "20px" }}
+              color="primary"
+              variant="outlined"
+            >
+              Sign Up
+            </Button>
+          </div>
+        </div>
       </main>
-      <footer className="text-center mt-20 my-10">all rights reserved</footer>
+      <footer className="text-center mt-20 my-10">
+        YTEnglishHub.com&copy;
+      </footer>
     </>
   );
 }

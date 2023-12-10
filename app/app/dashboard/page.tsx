@@ -1,31 +1,20 @@
 "use client"; // This is a client component 👈🏽
-import { title } from "@/components/primitives";
 // BsFillQuestionCircleFill
-import Call from "react-calendar-heatmap";
 import { Unstable_Grid2 as Grid } from "@mui/material";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 // Optionally import the CSS
-import "cal-heatmap/cal-heatmap.css";
-import Hotmap from "@/components/hotmap";
 import { useEffect, useState } from "react";
-import { getStdLocalDateString, noobfn, whenCalHeatMapJsReady } from "@/utils";
+import { getStdLocalDateString, noobfn } from "@/utils";
 import { LineChart } from "@mui/x-charts/LineChart";
 import * as dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import localeData from "dayjs/plugin/localeData";
-import {
-  getAllWords,
-  getUserAllWatchTime,
-  getUserWatchTimeByDate,
-} from "@/request/user";
+import { getAllWords, getUserAllWatchTime } from "@/request/user";
 dayjs.extend(localeData);
 dayjs.extend(duration);
 export default function AboutPage() {
-  const [cal, setCal] = useState<any>(null);
   //今日观看时长
   const [watch_timeToday, setWatch_timeToday] = useState<number>(0);
   //所有观看时长
@@ -68,7 +57,7 @@ export default function AboutPage() {
         });
         console.log(tmp_timeLineXDate);
         console.log(tmp_timeLineYDate);
-        
+
         setWatch_timeLineXDate(tmp_timeLineXDate);
         setWatch_timeLineYDate(tmp_timeLineYDate);
       }
@@ -131,89 +120,6 @@ export default function AboutPage() {
       // }
     }, noobfn);
   }, []);
-  // useEffect(() => {
-  //   whenCalHeatMapJsReady().then((res) => {
-  //     setCal(new window.CalHeatmap());
-  //   });
-  // }, []);
-  // useEffect(() => {
-  //   if (cal) {
-  //     cal.paint(
-  //       {
-  //         data: {
-  //           source: "https://cal-heatmap.com/fixtures/seattle-weather.csv",
-  //           type: "csv",
-  //           x: "date",
-  //           y: (d: { [x: string]: string | number }) => +d["temp_max"],
-  //           groupY: "max",
-  //         },
-  //         date: { start: new Date("2012-01-01") },
-  //         range: 12,
-  //         scale: {
-  //           color: {
-  //             type: "threshold",
-  //             range: ["#14432a", "#166b34", "#37a446", "#4dd05a"],
-  //             domain: [10, 20, 30],
-  //           },
-  //         },
-  //         domain: {
-  //           type: "month",
-  //           gutter: 4,
-  //           label: { text: "MMM", textAlign: "start", position: "top" },
-  //         },
-  //         subDomain: {
-  //           type: "ghDay",
-  //           radius: 2,
-  //           width: 11,
-  //           height: 11,
-  //           gutter: 4,
-  //         },
-  //         itemSelector: "#ex-ghDay",
-  //       },
-  //       [
-  //         [
-  //           window.Tooltip,
-  //           {
-  //             text: function (
-  //               date: any,
-  //               value: any,
-  //               dayjsDate: { format: (arg0: string) => string }
-  //             ) {
-  //               return (
-  //                 (value ? value : "No") +
-  //                 " contributions on " +
-  //                 dayjsDate.format("dddd, MMMM D, YYYY")
-  //               );
-  //             },
-  //           },
-  //         ],
-  //         [
-  //           window.LegendLite,
-  //           {
-  //             includeBlank: true,
-  //             itemSelector: "#ex-ghDay-legend",
-  //             radius: 2,
-  //             width: 11,
-  //             height: 11,
-  //             gutter: 4,
-  //           },
-  //         ],
-  //         [
-  //           window.CalendarLabel,
-  //           {
-  //             width: 30,
-  //             textAlign: "start",
-  //             text: () =>
-  //               dayjs
-  //                 .weekdaysShort()
-  //                 .map((d: any, i: number) => (i % 2 == 0 ? "" : d)),
-  //             padding: [25, 0, 0, 0],
-  //           },
-  //         ],
-  //       ]
-  //     );
-  //   }
-  // }, [cal]);
   return (
     <Grid
       container
@@ -241,7 +147,7 @@ export default function AboutPage() {
               variant="h6"
               component="div"
             >
-              观看时长
+              Activity Time Today
             </Typography>
             <Typography component="p" color="primary" variant="h5">
               {dayjs
@@ -250,7 +156,7 @@ export default function AboutPage() {
                 })
                 .asMinutes()
                 .toFixed(0)}
-              分钟
+              &nbsp; minutes
               {/* todo:完成度 */}
               {/* <Typography component="span" variant="h5" color="primary">
                 完成度（80%）
@@ -275,17 +181,31 @@ export default function AboutPage() {
           series={[
             {
               yAxisKey: "watch_time",
-              data: watch_timeLineYDate.map((watch_seconds) =>
-                Number(
+              data: watch_timeLineYDate.map((watch_seconds) => {
+                console.log(
+                  Number(
+                    dayjs
+                      .duration({
+                        seconds: watch_seconds,
+                      })
+                      .asMinutes()
+                      .toFixed(2)
+                  )
+                );
+
+                return Number(
                   dayjs
                     .duration({
                       seconds: watch_seconds,
                     })
-                    .asHours()
+                    .asMinutes()
                     .toFixed(2)
-                )
-              ),
-              label: "观看时长(小时)",
+                );
+              }),
+              valueFormatter: (val) => {
+                return `${val} minutes`;
+              },
+              label: "Daily Active Time",
               color: "rgb(89, 161, 79)",
             },
           ]}
@@ -309,10 +229,10 @@ export default function AboutPage() {
               variant="h6"
               component="div"
             >
-              新单词数
+              New Words Today
             </Typography>
             <Typography component="p" variant="h5" color="primary">
-              {todayWords.length}个
+              {todayWords.length}
             </Typography>
           </CardContent>
         </Card>
@@ -334,59 +254,13 @@ export default function AboutPage() {
             {
               yAxisKey: "new-words",
               data: wordsLineYData,
-              label: "新单词",
+              label: "Daily New Words",
               color: "rgb(242, 142, 44)",
             },
           ]}
           height={300}
         />
       </Grid>
-      {/* <Grid
-        xs={12}
-        sx={{
-          height: "200px",
-        }}
-      >
-        <div
-          style={{
-            background: "#22272d",
-            color: "#adbac7",
-            borderRadius: "3px",
-            padding: "1rem",
-            overflow: "hidden",
-          }}
-        >
-          <div id="ex-ghDay" className="margin-bottom--md"></div>
-          <a
-            className="button button--sm button--secondary margin-top--sm"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              cal.previous();
-            }}
-          >
-            ← Previous
-          </a>
-          <a
-            className="button button--sm button--secondary margin-top--sm margin-left--xs"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              cal.next();
-            }}
-          >
-            Next →
-          </a>
-          <div style={{ float: "right", fontSize: 12 }}>
-            <span style={{ color: "#768390" }}>Less</span>
-            <div
-              id="ex-ghDay-legend"
-              style={{ display: "inline-block", margin: "0 4px" }}
-            ></div>
-            <span style={{ color: "#768390", fontSize: 12 }}>More</span>
-          </div>
-        </div>
-      </Grid> */}
     </Grid>
   );
 }

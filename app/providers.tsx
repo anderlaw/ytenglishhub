@@ -17,11 +17,12 @@ export function Providers({ children, themeProps }: ProvidersProps) {
 
   return (
     <NextUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>
-        <StoreContext.Provider value={rootStore}>
-          {children}
-        </StoreContext.Provider>
-      </NextThemesProvider>
+      <StoreContext.Provider value={rootStore}>
+        {children}
+      </StoreContext.Provider>
+      {/* <NextThemesProvider {...themeProps}>
+        
+      </NextThemesProvider> */}
     </NextUIProvider>
   );
 }

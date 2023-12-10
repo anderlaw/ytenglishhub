@@ -58,7 +58,7 @@ const NoteCard = (props: { wordItem: IWordItem }) => {
           className="flex justify-between items-center"
         >
           <span>{props.wordItem.content}</span>
-          <Tooltip title="查看单词解释" placement="top-start">
+          <Tooltip title="word explanation" placement="top-start">
             <KeyboardDoubleArrowDownIcon
               color="primary"
               sx={{
@@ -124,7 +124,7 @@ const NoteCard = (props: { wordItem: IWordItem }) => {
       </CardContent>
       <CardActions className="flex justify-between items-center">
         <Typography sx={{ fontSize: 13 }} color="text.secondary" gutterBottom>
-          掌握度：{props.wordItem.mastery || 0}%
+          Word Mastery: {props.wordItem.mastery || 0}%
         </Typography>
 
         {/* <Tooltip title="巩固该单词" placement="top-start">
@@ -186,6 +186,7 @@ const QuizCard = (props: {
     <Card sx={{ minWidth: 400 }}>
       <CardHeader
         title={letterMissedWord}
+        subheader="enter the complete word and press Enter"
         action={
           <IconButton onClick={props.onClose} aria-label="settings">
             <HighlightOffIcon />
@@ -196,7 +197,7 @@ const QuizCard = (props: {
         <TextField
           id="quiz-input"
           color={resultColor}
-          placeholder="填入后Enter键确认"
+          placeholder="please begin"
           variant="standard"
           sx={{
             width: "100%",
@@ -258,7 +259,7 @@ export default function Main() {
           }}
           startIcon={<QuizIcon />}
         >
-          单词小测验
+          Take A Quiz
         </Button>
       </Box>
       <Grid

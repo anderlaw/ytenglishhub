@@ -1,22 +1,19 @@
 "user client";
-import { Listbox, ListboxItem, Link } from "@nextui-org/react";
-import { AiOutlineNumber } from "react-icons/ai";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-import InboxIcon from "@mui/icons-material/Inbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
-import GroupIcon from "@mui/icons-material/Group";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 export const LeftMenu = () => {
   const router = useRouter();
+  const path = usePathname();
+  console.log(path);
+
   return (
     <section
       style={{
@@ -30,20 +27,26 @@ export const LeftMenu = () => {
     >
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => router.push("/app/begin")}>
+          <ListItemButton
+            selected={path === "/app"}
+            onClick={() => router.push("/app")}
+          >
             <ListItemIcon>
               <DirectionsRunIcon />
             </ListItemIcon>
-            <ListItemText primary="开始" />
+            <ListItemText primary="Start" />
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => router.push("/app/playlist")}>
+          <ListItemButton
+            selected={path === "/app/playlist"}
+            onClick={() => router.push("/app/playlist")}
+          >
             <ListItemIcon>
               <PlaylistPlayIcon />
             </ListItemIcon>
-            <ListItemText primary="观看列表" />
+            <ListItemText primary="Watch List" />
           </ListItemButton>
         </ListItem>
         {/* <ListItem disablePadding>
@@ -55,19 +58,25 @@ export const LeftMenu = () => {
           </ListItemButton>
         </ListItem> */}
         <ListItem disablePadding>
-          <ListItemButton onClick={() => router.push("/app/notebook")}>
+          <ListItemButton
+            selected={path === "/app/notebook"}
+            onClick={() => router.push("/app/notebook")}
+          >
             <ListItemIcon>
               <ImportContactsIcon />
             </ListItemIcon>
-            <ListItemText primary="单词本" />
+            <ListItemText primary="Notebook" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => router.push("/app/dashboard")}>
+          <ListItemButton
+            selected={path === "/app/dashboard"}
+            onClick={() => router.push("/app/dashboard")}
+          >
             <ListItemIcon>
               <QueryStatsIcon />
             </ListItemIcon>
-            <ListItemText primary="统计数据" />
+            <ListItemText primary="Activity" />
           </ListItemButton>
         </ListItem>
       </List>

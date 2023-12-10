@@ -4,15 +4,6 @@ import { Button } from "@nextui-org/button";
 // BsFillQuestionCircleFill
 import * as React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Link,
-  Image,
-  Tooltip,
-} from "@nextui-org/react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
@@ -22,10 +13,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import { Unstable_Grid2 as Grid, Box, Divider } from "@mui/material";
-import CalHeatmap from "cal-heatmap";
 // Optionally import the CSS
-import "cal-heatmap/cal-heatmap.css";
-import Hotmap from "@/components/hotmap";
 import { VideoCard } from "@/components/videocard";
 import styled from "@emotion/styled";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -66,7 +54,7 @@ export default function AboutPage({ params }: { params: { id: string } }) {
   };
   React.useEffect(() => {
     console.log(params.id);
-  }, [value]);
+  }, [value, params.id]);
   return (
     <>
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>

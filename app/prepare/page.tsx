@@ -1,10 +1,9 @@
 "use client";
-import { title } from "@/components/primitives";
 import { IAuthDataKey, AuthDataStorageKey } from "@/types";
 import { useRouter } from "next/navigation"
 import { useEffect } from "react";
 
-export default function BlogPage() {
+export default function Main() {
   const router = useRouter();
   useEffect(() => {
     const auth_data_arr = location.href.split("#")[1].split("&");
@@ -15,6 +14,6 @@ export default function BlogPage() {
 
     localStorage.setItem(AuthDataStorageKey, JSON.stringify(auth_obj));
     router.push("/app");
-  }, []);
+  }, [router]);
   return <div></div>;
 }

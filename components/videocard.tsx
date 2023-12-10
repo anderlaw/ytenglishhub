@@ -55,7 +55,7 @@ export const VideoCard: React.FC<IVideoItem> = ({ id, title, thumbnail }) => {
           //   "linear-gradient(#5c5d5c 0%, rgba(0,0,0,0) 30%,rgba(0,0,0,0) 80%, #5c5d5c 100%)",
         }}
       >
-        <img src={validCoverURL} width="100%" />
+        <img src={validCoverURL} width="100%" alt="video's thumbnail"/>
         {/*  todo: 视频进度  */}
         {/* <LinearProgress variant="determinate" color="secondary" value={50} /> */}
       </Box>

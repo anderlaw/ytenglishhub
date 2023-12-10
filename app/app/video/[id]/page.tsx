@@ -1,12 +1,11 @@
 "use client"; // This is a client component 👈🏽
-import { title } from "@/components/primitives";
-// BsFillQuestionCircleFill
-import RepeatOutlinedIcon from "@mui/icons-material/RepeatOutlined";
-import PlayCircleOutlinedIcon from "@mui/icons-material/PlayCircleOutlined";
-import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import { useSearchParams } from "next/navigation";
+import {
+  RepeatOutlined as RepeatOutlinedIcon,
+  PlayCircleOutlined as PlayCircleOutlinedIcon,
+  Star as StartedIcon,
+  StarBorder as NotStartedIcon,
+} from "@mui/icons-material";
 import {
   Alert,
   Backdrop,
@@ -14,36 +13,26 @@ import {
   CircularProgress,
   FormControlLabel,
   Popover,
-  Select,
   Snackbar,
   Tooltip,
   Typography,
   Unstable_Grid2 as Grid,
   Switch,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  DialogActions,
+  Button,
 } from "@mui/material";
 // Optionally import the CSS
-import {
-  JSXElementConstructor,
-  Key,
-  PromiseLikeOfReactNode,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
-  getStdLocalDateString,
-  noobfn,
-  playAudioByURL,
-  whenYTIframeAPIReady,
-} from "@/utils";
+import { useEffect, useMemo, useState } from "react";
+import { getStdLocalDateString, noobfn, whenYTIframeAPIReady } from "@/utils";
 import { addToWatchList, updateUserWatchTime } from "@/request/user";
 import { CachedWatchTime } from "@/types";
 import { getVideoInfo } from "@/request/video";
 import { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import styled from "@emotion/styled";
 import { getDictInfo } from "@/utils/dict";
@@ -52,6 +41,13 @@ import {
   deleteFromNotebook,
   queryNotebook,
 } from "@/request/dictionary";
+import { DictDisplay } from "@/components/dictDisplay";
+export type IDictData = Array<{
+  word: string;
+  prs: { label: string | null; audio_url: string | null } | null;
+  fl: string;
+  shortdef: string;
+}>;
 const LeftPartAnchor = styled.span((props) => ({
   borderRight: "2px dotted #ccc",
   cursor: "text",
@@ -71,7 +67,7 @@ const WordDivider = (props: { atBegin: boolean }) => {
     />
   );
 };
-export default ({ params }: { params: { id: string } }) => {
+const Main = ({ params }: { params: { id: string } }) => {
   const searchParams = useSearchParams();
   //计算DOM中视频容器的width后，存储起来方便其他元素参考排列：如 字典popup组件的错位排列
   const [videoWidth, setVideoWidth] = useState<number>(0);
@@ -117,15 +113,20 @@ export default ({ params }: { params: { id: string } }) => {
   //timer: 记录播放器的播放进度
   useEffect(() => {
     let timer: any = null;
+    const invokeAndQueue = (fn: () => void) => {
+      fn();
+      timer = setTimeout(() => invokeAndQueue(fn), 1000);
+    };
+
     if (player) {
-      timer = setInterval(() => {
+      invokeAndQueue(() => {
         setPlayerCurTime(player.getCurrentTime());
         console.log("记录播放器进度中！！");
-      }, 800);
+      });
     }
     return () => {
       console.log("停止记录播放器进度！！");
-      clearInterval(timer);
+      clearTimeout(timer);
     };
   }, [player]);
   //观看时长统计
@@ -198,20 +199,13 @@ export default ({ params }: { params: { id: string } }) => {
         },
       });
     });
-  }, []);
+  }, [params.id, searchParams]);
   //词典配置
   const [anchorElForDict, setAnchorElForDict] = useState<HTMLElement | null>(
     null
   );
   const [dictDataLoading, setDictDataLoading] = useState<boolean>(false);
-  const [dictData, setDictData] = useState<
-    Array<{
-      word: string;
-      prs: { label: string | null; audio_url: string | null } | null;
-      fl: string;
-      shortdef: string;
-    }>
-  >([]);
+  const [dictData, setDictData] = useState<IDictData>([]);
   useEffect(() => {
     console.log("dictionary-data", dictData);
   }, [dictData]);
@@ -279,47 +273,46 @@ export default ({ params }: { params: { id: string } }) => {
         .finally(() => set_subs_loading_text("loaded"));
     }
   }, [origin_subs]);
-  //视频播放进度
-  const [currentTime, setCurrentTime] = useState<number>(0);
   //单词选中处理。临时将body元素的user-select禁用。只开启字幕区域的选中
   useEffect(() => {
     document.body.style.userSelect = "none";
     //@ts-ignore
     document.querySelector(".sub-container").style.userSelect = "text";
-    // const selectHandler = (e: { target: any }) => {
-    //   const target = e.target;
-    //   if (target.classList.contains("sub-words-space-anchor")) {
-    //     (window as any).userSelectingWords = true;
-    //     //容器添加类名，去掉cursor:pointer效果。
-    //     document
-    //       .querySelector(".sub-container")
-    //       ?.classList.add("user-selecting");
-    //     //允许选中单词
-    //     document.body.style.userSelect = "auto";
-    //   }
-    // };
-    const endSelectHandler = (e: { target: any }) => {
-      console.log(document.getSelection()?.toString());
+    const selectHandler = (e: { target: any }) => {
+      const target = e.target;
+      if (target.classList.contains("sub-words-space-anchor")) {
+        //容器添加类名，去掉cursor:pointer效果。
+        document
+          .querySelector(".sub-container")
+          ?.classList.add("user-selecting");
+      }
     };
-    // document
-    //   .querySelector(".sub-container")
-    //   ?.addEventListener("mousedown", selectHandler);
+    const endSelectHandler = (e: { target: any }) => {
+      const selectSentence = document.getSelection()?.toString()?.trim();
+      if (!selectSentence) {
+        return;
+      }
+      //打开对话框，记录并取消选择
+      setSelectionDialogOpen(true);
+      setSelectionContent(selectSentence);
+
+      //重置DOM的选择状态
+      document.getSelection()?.empty();
+    };
+    document
+      .querySelector(".sub-container")
+      ?.addEventListener("mousedown", selectHandler);
     document
       .querySelector(".sub-container")
       ?.addEventListener("mouseup", endSelectHandler);
 
     return () => {
-      //@ts-ignore
-      delete document.body.style.userSelect;
+      //@ts-ignore.还原body的user-select
+      document.body.style.userSelect = "auto";
 
-      if (document.querySelector(".sub-container")) {
-        //@ts-ignore
-        delete document.querySelector(".sub-container").style.userSelect;
-      }
-
-      // document
-      //   .querySelector(".sub-container")
-      //   ?.removeEventListener("mousedown", selectHandler);
+      document
+        .querySelector(".sub-container")
+        ?.removeEventListener("mousedown", selectHandler);
       document
         .querySelector(".sub-container")
         ?.removeEventListener("mouseup", endSelectHandler);
@@ -329,8 +322,6 @@ export default ({ params }: { params: { id: string } }) => {
   //复读功能：复读中不允许其他操作，除非暂停复读。故无需消除effect
   const [circleTimer, setCircleTimer] = useState<any>(null);
   const intoCircleMode = (player: any, startTime: number, endTime: number) => {
-    const duration = endTime - startTime;
-
     const seekAndPlay = () => {
       player.seekTo(startTime);
       player.playVideo();
@@ -348,18 +339,7 @@ export default ({ params }: { params: { id: string } }) => {
       clearInterval(circleTimer);
     };
   }, [circleTimer]);
-  //单词本
-  // const [allWords, setAllWords] = useState<
-  //   Array<{
-  //     content: string;
-  //     mastery: number;
-  //     create_at: number;
-  //     update_at: number;
-  //   }>
-  // >([]);
-  //点击并查询的单词是否已经保存在单词本中。
-  // const [lookedWordsInNotebook, setLookedWordsInNotebook] =
-  //   useState<boolean>(false);
+  //摊平的单词本
   const [flatWordsList, setFlatWordsList] = useState<Array<string>>([]);
   useEffect(() => {
     queryNotebook().then((res) => {
@@ -371,19 +351,30 @@ export default ({ params }: { params: { id: string } }) => {
       }
     }, noobfn);
   }, []);
-  // useEffect(() => {
-  //   if (anchorElForDict && allWords) {
-  //     const wordLowerCase = (anchorElForDict as any).textContent
-  //       .trim()
-  //       .toLocaleLowerCase();
-  //     const find = allWords.find((item) => item.content === wordLowerCase);
-  //     setLookedWordsInNotebook(!!find);
-  //   }
-  // }, [anchorElForDict, allWords]);
 
   //消息状态
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertState, setAlertState] = useState<"success" | "error">("success");
+  //划词收藏:句子、词语收藏对话框
+  const [selectionDialogOpen, setSelectionDialogOpen] =
+    useState<boolean>(false);
+  const [selectionContent, setSelectionContent] =
+    useState<string>("hand tools");
+  const [selectionQueryLoading, setSelectionQueryLoading] = useState<
+    "ready" | "loading" | "loaded"
+  >("ready");
+  const [selectionQueryDictData, setSelectionQueryDictData] =
+    useState<IDictData>([]);
+
+  const resetSelectionQueryDialogState = useMemo(
+    () => () => {
+      setSelectionDialogOpen(false);
+      setSelectionQueryLoading("ready");
+      setSelectionContent("");
+      setSelectionQueryDictData([]);
+    },
+    []
+  );
   return (
     <>
       <Grid
@@ -418,9 +409,9 @@ export default ({ params }: { params: { id: string } }) => {
                 inputProps={{ "aria-label": "controlled" }}
               />
             }
-            label={subs_open ? "关闭字幕" : "开启字幕"}
+            label={subs_open ? "close captions" : "open captions"}
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={
               <Select
                 size="small"
@@ -440,7 +431,7 @@ export default ({ params }: { params: { id: string } }) => {
               </Select>
             }
             label="展示翻译"
-          />
+          /> */}
           <Box
             className="sub-container"
             sx={{
@@ -451,7 +442,7 @@ export default ({ params }: { params: { id: string } }) => {
             {subs_loading_text === "loading" && (
               <div className="flex flex-col items-center">
                 <CircularProgress />
-                <span>字幕数据加载中...</span>
+                <span>loading captions...</span>
               </div>
             )}
             {subs_loading_text === "loaded" &&
@@ -531,22 +522,7 @@ export default ({ params }: { params: { id: string } }) => {
                             );
                           } else {
                             return slicedPiecesFromSeg.map(
-                              (
-                                slicedWord:
-                                  | string
-                                  | number
-                                  | boolean
-                                  | ReactElement<
-                                      any,
-                                      string | JSXElementConstructor<any>
-                                    >
-                                  | Iterable<ReactNode>
-                                  | ReactPortal
-                                  | PromiseLikeOfReactNode
-                                  | null
-                                  | undefined,
-                                inInIndex: Key | null | undefined
-                              ) => {
+                              (slicedWord: string, inInIndex: number) => {
                                 return (
                                   <span key={inInIndex}>
                                     <WordDivider
@@ -569,7 +545,7 @@ export default ({ params }: { params: { id: string } }) => {
                                       }}
                                       className={`sub-word ${
                                         flatWordsList.includes(
-                                          (slicedWord as string).toLowerCase()
+                                          slicedWord.toLowerCase()
                                         )
                                           ? "marked"
                                           : ""
@@ -586,7 +562,7 @@ export default ({ params }: { params: { id: string } }) => {
                       )}
                     </Box>
                     <Box className="flex flex-row w-11 sub-row-icons">
-                      <Tooltip title="此处开始播放" placement="top-start">
+                      <Tooltip title="Play from here" placement="top-start">
                         <PlayCircleOutlinedIcon
                           onClick={() => {
                             if (player) {
@@ -599,7 +575,7 @@ export default ({ params }: { params: { id: string } }) => {
                           fontSize="small"
                         />
                       </Tooltip>
-                      <Tooltip title="反复播放" placement="top-start">
+                      <Tooltip title="Play repeatedly" placement="top-start">
                         <RepeatOutlinedIcon
                           onClick={() => {
                             if (player) {
@@ -637,7 +613,7 @@ export default ({ params }: { params: { id: string } }) => {
           cancleCircleMode();
         }}
       >
-        进入复读播放模式，点击任意处退出该模式！
+        You are in repeat mode, press anywhere to exit！
       </Backdrop>
       {/* 词典弹出层 */}
       <Popover
@@ -653,8 +629,8 @@ export default ({ params }: { params: { id: string } }) => {
             maxHeight: "500px",
           }}
         >
-          {dictDataLoading && "查询中..."}
-          {!dictDataLoading && dictData.length === 0 && "没有找到结果!"}
+          {dictDataLoading && "Searching..."}
+          {!dictDataLoading && dictData.length === 0 && "No results"}
           {!dictDataLoading && dictData.length > 0 && (
             <Box>
               <Box
@@ -671,42 +647,132 @@ export default ({ params }: { params: { id: string } }) => {
                 {flatWordsList.indexOf(
                   (anchorElForDict as any)?.textContent.trim().toLowerCase()
                 ) > -1 ? (
-                  <RemoveIcon
-                    onClick={() => {
-                      const currentWord = anchorElForDict?.textContent
-                        ?.trim()
-                        .toLowerCase() as any;
-                      deleteFromNotebook(currentWord).then(
-                        (res) => {
-                          if (res.status === 200) {
+                  <Tooltip title="Remove from Notebook" placement="top-start">
+                    <StartedIcon
+                      onClick={() => {
+                        const currentWord = anchorElForDict?.textContent
+                          ?.trim()
+                          .toLowerCase() as any;
+                        deleteFromNotebook(currentWord).then(
+                          (res) => {
+                            if (res.status === 200) {
+                              setAlertOpen(true);
+                              setAlertState("success");
+                              setFlatWordsList((prev) => {
+                                const newWord = Object.assign([], prev);
+                                newWord.splice(newWord.indexOf(currentWord), 1);
+                                return newWord;
+                              });
+                            }
+                          },
+                          (err) => {
                             setAlertOpen(true);
-                            setAlertState("success");
-                            setFlatWordsList((prev) => {
-                              const newWord = Object.assign([], prev);
-                              newWord.splice(newWord.indexOf(currentWord), 1);
-                              return newWord;
-                            });
+                            setAlertState("error");
                           }
-                        },
-                        (err) => {
-                          setAlertOpen(true);
-                          setAlertState("error");
-                        }
-                      );
-                    }}
-                    sx={{
-                      cursor: "pointer",
-                    }}
-                  />
+                        );
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Tooltip>
                 ) : (
-                  <AddIcon
+                  <Tooltip title="Save to Notebook" placement="top-start">
+                    <NotStartedIcon
+                      onClick={() => {
+                        const currentWord = anchorElForDict?.textContent
+                          ?.trim()
+                          .toLowerCase() as any;
+                        insertToNotebook(currentWord, {
+                          dict_type: "webster",
+                          dict_data: dictData,
+                        }).then(
+                          (res) => {
+                            if (res.status === 200) {
+                              setAlertOpen(true);
+                              setAlertState("success");
+                              setFlatWordsList((prev) => {
+                                const newWord = Object.assign([], prev);
+                                newWord.unshift(currentWord);
+                                return newWord;
+                              });
+                            }
+                          },
+                          (err) => {
+                            setAlertOpen(true);
+                            setAlertState("error");
+                          }
+                        );
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Tooltip>
+                )}
+              </Box>
+              <DictDisplay dictData={dictData} />
+            </Box>
+          )}
+        </Box>
+      </Popover>
+      {/* 句子、词语收藏对话框 */}
+      <Dialog open={selectionDialogOpen}>
+        <DialogTitle>{"Phrase & Expression"}</DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{
+              width: "500px",
+            }}
+          >
+            <Box>
+              <TextField
+                value={selectionContent}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setSelectionContent(event.target.value);
+                  setSelectionQueryLoading("ready");
+                }}
+                autoFocus
+                variant="standard"
+              />
+              <Button
+                sx={{ marginLeft: "18px" }}
+                size="small"
+                variant="outlined"
+                onClick={(e) => {
+                  //查询
+                  setSelectionQueryLoading("loading");
+                  getDictInfo(selectionContent)
+                    .then((finalData) => {
+                      finalData && setSelectionQueryDictData(finalData);
+                    })
+                    .finally(() => setSelectionQueryLoading("loaded"));
+                }}
+              >
+                Search
+              </Button>
+              {selectionQueryLoading === "loaded" &&
+                selectionQueryDictData.length && (
+                  <Button
+                    component="label"
+                    sx={{ marginLeft: "18px" }}
+                    variant="contained"
+                    startIcon={<NotStartedIcon />}
+                    size="small"
                     onClick={() => {
-                      const currentWord = anchorElForDict?.textContent
-                        ?.trim()
+                      //发送server
+                      const currentWord = selectionContent
+                        .trim()
                         .toLowerCase() as any;
+                      if (!selectionContent) {
+                        alert("Please enter valid phrase");
+                        return;
+                      }
+                      resetSelectionQueryDialogState();
+
                       insertToNotebook(currentWord, {
                         dict_type: "webster",
-                        dict_data: dictData,
+                        dict_data: selectionQueryDictData,
                       }).then(
                         (res) => {
                           if (res.status === 200) {
@@ -725,61 +791,30 @@ export default ({ params }: { params: { id: string } }) => {
                         }
                       );
                     }}
-                    sx={{
-                      cursor: "pointer",
-                    }}
-                  />
-                )}
-              </Box>
-
-              {dictData.map((item: any, index: number) => {
-                return (
-                  <Box
-                    key={index}
-                    sx={{
-                      marginTop: "12px",
-                    }}
                   >
-                    <Typography fontSize="18px" fontWeight="700">
-                      {item.word}
-                    </Typography>
-                    <Typography fontSize="14px" fontStyle="italic">
-                      {item.fl}&nbsp;
-                      {item.prs && item.prs.label ? (
-                        <span>.&nbsp;{item.prs.label}&nbsp;</span>
-                      ) : null}
-                      {item.prs && item.prs.audio_url && (
-                        <VolumeMuteIcon
-                          sx={{
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            //play music
-                            playAudioByURL(item.prs.audio_url);
-                          }}
-                        />
-                      )}
-                    </Typography>
-                    {item.shortdef.map(
-                      (content: string, innerIndex: number) => {
-                        return (
-                          <Typography
-                            fontSize="14px"
-                            fontWeight="400"
-                            key={innerIndex}
-                          >
-                            {content}
-                          </Typography>
-                        );
-                      }
-                    )}
-                  </Box>
-                );
-              })}
+                    Save it
+                  </Button>
+                )}
             </Box>
-          )}
-        </Box>
-      </Popover>
+            {selectionQueryLoading === "loading" && "loading data..."}
+            {selectionQueryLoading === "loaded" &&
+              selectionQueryDictData.length === 0 && (
+                <DialogContentText className="mt-4">
+                  No results for{" "}
+                  <Typography component="span" fontStyle="italic">
+                    {selectionContent}
+                  </Typography>
+                  , Please try something else
+                </DialogContentText>
+              )}
+
+            <DictDisplay dictData={selectionQueryDictData} />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={resetSelectionQueryDialogState}>Close</Button>
+        </DialogActions>
+      </Dialog>
       {/* 消息提示层 */}
       <Snackbar
         open={alertOpen}
@@ -791,9 +826,12 @@ export default ({ params }: { params: { id: string } }) => {
           severity={alertState}
           sx={{ width: "100%" }}
         >
-          {alertState === "success" ? "操作成功！" : "操作失败！"}
+          {alertState === "success"
+            ? "Operation completed"
+            : "operation failed"}
         </Alert>
       </Snackbar>
     </>
   );
 };
+export default Main;
