@@ -46,8 +46,8 @@ export const whenCalHeatMapJsReady = () => new Promise((res) => {
 
 
 export const noobfn = () => { }
-export const getStdLocalDateString = () => {
-    const localDate = new Date();
+export const getStdLocalDateString = (timestamp?: number) => {
+    const localDate = timestamp ? new Date(timestamp) : new Date();
     return `${localDate.getFullYear()}-${localDate.getMonth() + 1}-${localDate.getDate()}`;
 }
 
@@ -55,4 +55,10 @@ export const safeClearInterval = (timer: any) => {
     if (typeof window !== 'undefined') {
         window.clearInterval(timer)
     }
+}
+
+export const playAudioByURL = (url: string) => {
+    const audio = new Audio();
+    audio.src = url;
+    audio.play();
 }

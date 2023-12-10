@@ -24,6 +24,10 @@ body{
     margin-left:6px;
     cursor: pointer;
   }
+  .sub-word.marked{
+    background-color: orangered;
+    color:#fff;
+  }
   .sub-container.user-selecting .sub-word{
     cursor: none;
 }
@@ -56,4 +60,16 @@ body{
   ::selection {
     color: red;
     background: yellow;
+  }
+
+  #quiz-input{
+    font-size: 36px;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+  .MuiInputBase-colorSuccess  #quiz-input{
+    color:green;
+  }
+  .MuiInputBase-colorError  #quiz-input{
+    color:red;
   }

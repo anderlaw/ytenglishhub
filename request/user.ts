@@ -88,13 +88,13 @@ export const updateVideoProgress = (id: string, play_progress: number) => {
     })
 }
 //更新观看时长
-export const updateUserWatchTime = (watch_time_increment: number) => {
+export const updateUserWatchTime = (watch_time_increment: number, specificDate?: string) => {
     return axiosIns({
         url: "/user/watch_time",
         method: "POST",
         data: {
             watch_time: watch_time_increment,
-            date: getStdLocalDateString()
+            date: specificDate || getStdLocalDateString()
         }
     })
 }
@@ -106,6 +106,12 @@ export const getUserWatchTimeByDate = () => {
         params: {
             date: getStdLocalDateString()
         }
+    })
+}
+export const getUserAllWatchTime = () => {
+    return axiosIns({
+        url: "/user/watch_time",
+        method: "GET"
     })
 }
 export const getAllWords = () => {

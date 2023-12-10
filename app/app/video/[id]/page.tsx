@@ -1,31 +1,27 @@
 "use client"; // This is a client component 👈🏽
 import { title } from "@/components/primitives";
-import { Button } from "@nextui-org/button";
 // BsFillQuestionCircleFill
-import Call from "react-calendar-heatmap";
 import RepeatOutlinedIcon from "@mui/icons-material/RepeatOutlined";
 import PlayCircleOutlinedIcon from "@mui/icons-material/PlayCircleOutlined";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { useSearchParams } from "next/navigation";
 import {
+  Alert,
   Backdrop,
   Box,
   CircularProgress,
-  Divider,
-  FormControl,
   FormControlLabel,
   Popover,
   Select,
+  Snackbar,
   Tooltip,
   Typography,
   Unstable_Grid2 as Grid,
+  Switch,
 } from "@mui/material";
-import CalHeatmap from "cal-heatmap";
 // Optionally import the CSS
-import "cal-heatmap/cal-heatmap.css";
-import Switch from "@mui/material/Switch";
-import { VideoCard } from "@/components/videocard";
 import {
   JSXElementConstructor,
   Key,
@@ -37,12 +33,13 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getStdLocalDateString, noobfn, whenYTIframeAPIReady } from "@/utils";
 import {
-  addToWatchList,
-  updateUserWatchTime,
-  updateVideoProgress,
-} from "@/request/user";
+  getStdLocalDateString,
+  noobfn,
+  playAudioByURL,
+  whenYTIframeAPIReady,
+} from "@/utils";
+import { addToWatchList, updateUserWatchTime } from "@/request/user";
 import { CachedWatchTime } from "@/types";
 import { getVideoInfo } from "@/request/video";
 import { SelectChangeEvent } from "@mui/material/Select";
@@ -50,6 +47,11 @@ import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import styled from "@emotion/styled";
 import { getDictInfo } from "@/utils/dict";
+import {
+  insertToNotebook,
+  deleteFromNotebook,
+  queryNotebook,
+} from "@/request/dictionary";
 const LeftPartAnchor = styled.span((props) => ({
   borderRight: "2px dotted #ccc",
   cursor: "text",
@@ -69,90 +71,15 @@ const WordDivider = (props: { atBegin: boolean }) => {
     />
   );
 };
-const testDicData = [
-  {
-    word: "skill",
-    prs: null,
-    fl: "verb",
-    shortdef: ["to make a difference : matter, avail"],
-  },
-  {
-    word: "skill",
-    prs: {
-      label: "ˈskil",
-      audio_url:
-        "https://media.merriam-webster.com/audio/prons/en/us/mp3/s/skill001.mp3",
-    },
-    fl: "noun",
-    shortdef: [
-      "the ability to use one's knowledge effectively and readily in execution or performance",
-      "dexterity or coordination especially in the execution of learned physical tasks",
-      "a learned power of doing something competently : a developed aptitude or ability",
-    ],
-  },
-  {
-    word: "people skills",
-    prs: null,
-    fl: "noun",
-    shortdef: [
-      "the ability to work with or talk to other people in an effective and friendly way",
-    ],
-  },
-  {
-    word: "de-skill",
-    prs: {
-      label: "ˌdē-ˈskil",
-      audio_url:
-        "https://media.merriam-webster.com/audio/prons/en/us/mp3/d/de_ski01.mp3",
-    },
-    fl: "verb",
-    shortdef: [
-      "to reduce the level of skill needed for (a job)",
-      "to reduce the level of skill needed for a job by (a worker)",
-    ],
-  },
-  {
-    word: "sub*skill",
-    prs: {
-      label: "ˈsəb-ˌskil",
-      audio_url:
-        "https://media.merriam-webster.com/audio/prons/en/us/mp3/s/subskill_1.mp3",
-    },
-    fl: "noun",
-    shortdef: [
-      "a skill that is part of and necessary to another more complex skill",
-    ],
-  },
-] as any;
-type StateType = {
-  player: any;
-  subtitleEvents: Array<any>;
-  tabIndex: number;
-  videoWidth: number;
-  videoHeight: number;
-  currentTime: number;
-  curTimeTracker: any;
-  subTracker: any;
-  learningProgressTracker: any;
-  addBookDialogOpen: boolean;
-  sentenceWithWord: string;
-  words_in_notebook: string[];
-  programming_paused: boolean;
-};
-type PropType = {};
-// const addVideo = (videoInfo) => {
-//   return
-// }
-//todo:记录视频播放进度。
-const in_test = true;
 export default ({ params }: { params: { id: string } }) => {
+  const searchParams = useSearchParams();
   //计算DOM中视频容器的width后，存储起来方便其他元素参考排列：如 字典popup组件的错位排列
   const [videoWidth, setVideoWidth] = useState<number>(0);
 
   const [videoHeight, setVideoHeight] = useState<string>("auto");
   const [subs_loading_text, set_subs_loading_text] = useState<
     "loading" | "loaded"
-  >("loaded");
+  >("loading");
   //字幕开关：是否显示字幕
   const [subs_open, setSubs_open] = useState(true);
   const handleSubsOpenChnage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,24 +130,28 @@ export default ({ params }: { params: { id: string } }) => {
   }, [player]);
   //观看时长统计
   useEffect(() => {
-    let seconds = 0;
-    try {
-      seconds += JSON.parse(localStorage.getItem(CachedWatchTime) as any);
-    } catch (e) {
-      seconds = 0;
-    }
-    const timer = setInterval(() => {
-      seconds++;
-    }, 1000);
-
+    let now_TS = Date.now();
     const pageHideHandler = (event: any) => {
-      localStorage.setItem(CachedWatchTime, JSON.stringify(seconds));
+      const duration_seconds = (Date.now() - now_TS) / 1000;
+      localStorage.setItem(
+        CachedWatchTime,
+        `${getStdLocalDateString()}#${duration_seconds}`
+      );
     };
+    //用户直接关闭页面或浏览器时。
     window.addEventListener("pagehide", pageHideHandler, false);
     return () => {
-      clearInterval(timer);
+      //移除监听
       window.removeEventListener("pagehide", pageHideHandler, false);
-      updateUserWatchTime(seconds).then(noobfn, noobfn);
+      const duration_seconds = (Date.now() - now_TS) / 1000;
+      //上报数据到db
+      updateUserWatchTime(duration_seconds).then(noobfn, () => {
+        //更新失败
+        localStorage.setItem(
+          CachedWatchTime,
+          `${getStdLocalDateString()}#${duration_seconds}`
+        );
+      });
     };
   }, []);
   //视频播放器配置
@@ -247,12 +178,13 @@ export default ({ params }: { params: { id: string } }) => {
         events: {
           onReady: (event: any) => {
             const videoData = player.getVideoData();
-            console.log(player.video_id, title);
-            addToWatchList({
-              title: videoData.title,
-              id: videoData.video_id,
-              thumbnail: "xxxx",
-            }).catch(noobfn);
+            if (searchParams.get("last_page") === "/app/playlist") {
+            } else {
+              addToWatchList({
+                title: videoData.title,
+                id: videoData.video_id,
+              }).catch(noobfn);
+            }
             //将player记录到state
             setPlayer(player);
           },
@@ -271,6 +203,7 @@ export default ({ params }: { params: { id: string } }) => {
   const [anchorElForDict, setAnchorElForDict] = useState<HTMLElement | null>(
     null
   );
+  const [dictDataLoading, setDictDataLoading] = useState<boolean>(false);
   const [dictData, setDictData] = useState<
     Array<{
       word: string;
@@ -278,7 +211,7 @@ export default ({ params }: { params: { id: string } }) => {
       fl: string;
       shortdef: string;
     }>
-  >(testDicData);
+  >([]);
   useEffect(() => {
     console.log("dictionary-data", dictData);
   }, [dictData]);
@@ -327,14 +260,6 @@ export default ({ params }: { params: { id: string } }) => {
     set_trans_sub_url(event.target.value);
   };
   useEffect(() => {
-    if (in_test) {
-      // set_subs_loading_text("loaded");
-      set_origin_sub_events(
-        JSON.parse(localStorage.getItem("YTEnglish_test_sub") || "[]")
-      );
-    }
-  }, []);
-  useEffect(() => {
     axios.get(trans_sub_url).then((res) => {
       if (res.status === 200) {
         set_trans_sub_events(res.data.events);
@@ -349,12 +274,6 @@ export default ({ params }: { params: { id: string } }) => {
         .then((res) => {
           if (res.status === 200) {
             set_origin_sub_events(res.data.events);
-            if (in_test) {
-              localStorage.setItem(
-                "YTEnglish_test_sub",
-                JSON.stringify(res.data.events)
-              );
-            }
           }
         })
         .finally(() => set_subs_loading_text("loaded"));
@@ -392,8 +311,11 @@ export default ({ params }: { params: { id: string } }) => {
     return () => {
       //@ts-ignore
       delete document.body.style.userSelect;
-      //@ts-ignore
-      delete document.querySelector(".sub-container").style.userSelect;
+
+      if (document.querySelector(".sub-container")) {
+        //@ts-ignore
+        delete document.querySelector(".sub-container").style.userSelect;
+      }
 
       // document
       //   .querySelector(".sub-container")
@@ -426,6 +348,42 @@ export default ({ params }: { params: { id: string } }) => {
       clearInterval(circleTimer);
     };
   }, [circleTimer]);
+  //单词本
+  // const [allWords, setAllWords] = useState<
+  //   Array<{
+  //     content: string;
+  //     mastery: number;
+  //     create_at: number;
+  //     update_at: number;
+  //   }>
+  // >([]);
+  //点击并查询的单词是否已经保存在单词本中。
+  // const [lookedWordsInNotebook, setLookedWordsInNotebook] =
+  //   useState<boolean>(false);
+  const [flatWordsList, setFlatWordsList] = useState<Array<string>>([]);
+  useEffect(() => {
+    queryNotebook().then((res) => {
+      if (res.status === 200) {
+        setFlatWordsList(
+          res.data.Items.map((item: { content: string }) => item.content)
+        );
+        // setAllWords(res.data.Items);
+      }
+    }, noobfn);
+  }, []);
+  // useEffect(() => {
+  //   if (anchorElForDict && allWords) {
+  //     const wordLowerCase = (anchorElForDict as any).textContent
+  //       .trim()
+  //       .toLocaleLowerCase();
+  //     const find = allWords.find((item) => item.content === wordLowerCase);
+  //     setLookedWordsInNotebook(!!find);
+  //   }
+  // }, [anchorElForDict, allWords]);
+
+  //消息状态
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [alertState, setAlertState] = useState<"success" | "error">("success");
   return (
     <>
       <Grid
@@ -548,13 +506,24 @@ export default ({ params }: { params: { id: string } }) => {
                                   key={index}
                                   onClick={(e) => {
                                     setAnchorElForDict(e.currentTarget);
-                                    // getDictInfo(
-                                    //   e.currentTarget.textContent as string
-                                    // ).then((finalData) => {
-                                    //   finalData && setDictData(finalData);
-                                    // });
+                                    setDictDataLoading(true);
+                                    getDictInfo(
+                                      e.currentTarget.textContent as string
+                                    )
+                                      .then((finalData) => {
+                                        finalData && setDictData(finalData);
+                                      })
+                                      .finally(() => {
+                                        setDictDataLoading(false);
+                                      });
                                   }}
-                                  className="sub-word"
+                                  className={`sub-word ${
+                                    flatWordsList.includes(
+                                      (stripedWord as string).toLowerCase()
+                                    )
+                                      ? "marked"
+                                      : ""
+                                  }`}
                                 >
                                   {stripedWord}
                                 </span>
@@ -587,13 +556,24 @@ export default ({ params }: { params: { id: string } }) => {
                                       key={index}
                                       onClick={(e) => {
                                         setAnchorElForDict(e.currentTarget);
-                                        // getDictInfo(
-                                        //   e.currentTarget.textContent as string
-                                        // ).then((finalData) => {
-                                        //   finalData && setDictData(finalData);
-                                        // });
+                                        setDictDataLoading(true);
+                                        getDictInfo(
+                                          e.currentTarget.textContent as string
+                                        )
+                                          .then((finalData) => {
+                                            finalData && setDictData(finalData);
+                                          })
+                                          .finally(() => {
+                                            setDictDataLoading(false);
+                                          });
                                       }}
-                                      className="sub-word"
+                                      className={`sub-word ${
+                                        flatWordsList.includes(
+                                          (slicedWord as string).toLowerCase()
+                                        )
+                                          ? "marked"
+                                          : ""
+                                      }`}
                                     >
                                       {slicedWord}
                                     </span>
@@ -673,79 +653,147 @@ export default ({ params }: { params: { id: string } }) => {
             maxHeight: "500px",
           }}
         >
-          <Box
-            className="flex flex-row justify-between items-center"
-            sx={{
-              borderBottom: "1px solid #ccc",
-              paddingBottom: "8px",
-            }}
-          >
-            <Typography fontSize="28px" fontWeight="700">
-              {anchorElForDict?.textContent?.trim()}
-            </Typography>
-            {true ? (
-              <RemoveIcon
-                onClick={() => {}}
-                sx={{
-                  cursor: "pointer",
-                }}
-              />
-            ) : (
-              <AddIcon
-                onClick={() => {}}
-                sx={{
-                  cursor: "pointer",
-                }}
-              />
-            )}
-          </Box>
-
-          {testDicData.map((item: any, index: number) => {
-            return (
+          {dictDataLoading && "查询中..."}
+          {!dictDataLoading && dictData.length === 0 && "没有找到结果!"}
+          {!dictDataLoading && dictData.length > 0 && (
+            <Box>
               <Box
-                key={index}
+                className="flex flex-row justify-between items-center"
                 sx={{
-                  marginTop: "12px",
+                  borderBottom: "1px solid #ccc",
+                  paddingBottom: "8px",
                 }}
               >
-                <Typography fontSize="18px" fontWeight="700">
-                  {item.word}
+                <Typography fontSize="28px" fontWeight="700">
+                  {anchorElForDict?.textContent?.trim()}
                 </Typography>
-                <Typography fontSize="14px" fontStyle="italic">
-                  {item.fl}&nbsp;
-                  {item.prs && item.prs.label ? (
-                    <span>.&nbsp;{item.prs.label}&nbsp;</span>
-                  ) : null}
-                  {item.prs && item.prs.audio_url && (
-                    <VolumeMuteIcon
-                      sx={{
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        //play music
-                        const audio = new Audio();
-                        audio.src = item.prs.audio_url;
-                        audio.play();
-                      }}
-                    />
-                  )}
-                </Typography>
-                {item.shortdef.map((content: string, innerIndex: number) => {
-                  return (
-                    <Typography
-                      fontSize="14px"
-                      fontWeight="400"
-                      key={innerIndex}
-                    >
-                      {content}
-                    </Typography>
-                  );
-                })}
+
+                {flatWordsList.indexOf(
+                  (anchorElForDict as any)?.textContent.trim().toLowerCase()
+                ) > -1 ? (
+                  <RemoveIcon
+                    onClick={() => {
+                      const currentWord = anchorElForDict?.textContent
+                        ?.trim()
+                        .toLowerCase() as any;
+                      deleteFromNotebook(currentWord).then(
+                        (res) => {
+                          if (res.status === 200) {
+                            setAlertOpen(true);
+                            setAlertState("success");
+                            setFlatWordsList((prev) => {
+                              const newWord = Object.assign([], prev);
+                              newWord.splice(newWord.indexOf(currentWord), 1);
+                              return newWord;
+                            });
+                          }
+                        },
+                        (err) => {
+                          setAlertOpen(true);
+                          setAlertState("error");
+                        }
+                      );
+                    }}
+                    sx={{
+                      cursor: "pointer",
+                    }}
+                  />
+                ) : (
+                  <AddIcon
+                    onClick={() => {
+                      const currentWord = anchorElForDict?.textContent
+                        ?.trim()
+                        .toLowerCase() as any;
+                      insertToNotebook(currentWord, {
+                        dict_type: "webster",
+                        dict_data: dictData,
+                      }).then(
+                        (res) => {
+                          if (res.status === 200) {
+                            setAlertOpen(true);
+                            setAlertState("success");
+                            setFlatWordsList((prev) => {
+                              const newWord = Object.assign([], prev);
+                              newWord.unshift(currentWord);
+                              return newWord;
+                            });
+                          }
+                        },
+                        (err) => {
+                          setAlertOpen(true);
+                          setAlertState("error");
+                        }
+                      );
+                    }}
+                    sx={{
+                      cursor: "pointer",
+                    }}
+                  />
+                )}
               </Box>
-            );
-          })}
+
+              {dictData.map((item: any, index: number) => {
+                return (
+                  <Box
+                    key={index}
+                    sx={{
+                      marginTop: "12px",
+                    }}
+                  >
+                    <Typography fontSize="18px" fontWeight="700">
+                      {item.word}
+                    </Typography>
+                    <Typography fontSize="14px" fontStyle="italic">
+                      {item.fl}&nbsp;
+                      {item.prs && item.prs.label ? (
+                        <span>.&nbsp;{item.prs.label}&nbsp;</span>
+                      ) : null}
+                      {item.prs && item.prs.audio_url && (
+                        <VolumeMuteIcon
+                          sx={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            //play music
+                            playAudioByURL(item.prs.audio_url);
+                          }}
+                        />
+                      )}
+                    </Typography>
+                    {item.shortdef.map(
+                      (content: string, innerIndex: number) => {
+                        return (
+                          <Typography
+                            fontSize="14px"
+                            fontWeight="400"
+                            key={innerIndex}
+                          >
+                            {content}
+                          </Typography>
+                        );
+                      }
+                    )}
+                  </Box>
+                );
+              })}
+            </Box>
+          )}
         </Box>
       </Popover>
+      {/* 消息提示层 */}
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={2000}
+        onClose={() => setAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setAlertOpen(false)}
+          severity={alertState}
+          sx={{ width: "100%" }}
+        >
+          {alertState === "success" ? "操作成功！" : "操作失败！"}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

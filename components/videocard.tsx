@@ -1,3 +1,4 @@
+'use client'
 import { IVideoItem } from "@/types";
 import {
   Box,
@@ -39,7 +40,8 @@ export const VideoCard: React.FC<IVideoItem> = ({ id, title, thumbnail }) => {
         cursor: "pointer",
       }}
       onClick={() => {
-        router.push(`/app/video/${id}`);
+        // console.log(router.)
+        router.push(`/app/video/${id}?last_page=${location.pathname}`);
       }}
     >
       <Box

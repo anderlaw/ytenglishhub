@@ -9,7 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import InboxIcon from "@mui/icons-material/Inbox";
 import DraftsIcon from "@mui/icons-material/Drafts";
-import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import GroupIcon from "@mui/icons-material/Group";
@@ -37,14 +37,7 @@ export const LeftMenu = () => {
             <ListItemText primary="开始" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => router.push("/app/dashboard")}>
-            <ListItemIcon>
-              <QueryStatsIcon />
-            </ListItemIcon>
-            <ListItemText primary="数据中心" />
-          </ListItemButton>
-        </ListItem>
+
         <ListItem disablePadding>
           <ListItemButton onClick={() => router.push("/app/playlist")}>
             <ListItemIcon>
@@ -53,20 +46,28 @@ export const LeftMenu = () => {
             <ListItemText primary="观看列表" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
+        {/* <ListItem disablePadding>
           <ListItemButton onClick={() => router.push("/app/channel")}>
             <ListItemIcon>
               <GroupIcon />
             </ListItemIcon>
             <ListItemText primary="收藏频道" />
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
         <ListItem disablePadding>
           <ListItemButton onClick={() => router.push("/app/notebook")}>
             <ListItemIcon>
               <ImportContactsIcon />
             </ListItemIcon>
             <ListItemText primary="单词本" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => router.push("/app/dashboard")}>
+            <ListItemIcon>
+              <QueryStatsIcon />
+            </ListItemIcon>
+            <ListItemText primary="统计数据" />
           </ListItemButton>
         </ListItem>
       </List>

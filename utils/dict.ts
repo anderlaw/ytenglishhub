@@ -6,12 +6,18 @@ export const getDictInfo = (word: string) => {
             console.log(res.data);
             //res.data is a array
             const data = res.data as any;
-            return data.map((item: any) => ({
-                word: item.hwi.hw,//
-                prs: item.hwi.prs ? assembleAudioInfo(item.hwi.prs) : null,
-                fl: item.fl,
-                shortdef: item.shortdef
-            }))
+            return data.map((item: any) => {
+                if (item.hwi) {
+                    return {
+                        word: item.hwi.hw,//
+                        prs: item.hwi.prs ? assembleAudioInfo(item.hwi.prs) : null,
+                        fl: item.fl,
+                        shortdef: item.shortdef
+                    }
+                } else {
+                    return null;
+                }
+            }).filter((item: any) => !!item)
         }
         return null
     }, () => null)

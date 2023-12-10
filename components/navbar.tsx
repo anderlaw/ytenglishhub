@@ -131,7 +131,18 @@ export const Navbar = observer(() => {
             <ThemeSwitch />
           </NavbarItem>
           <NavbarItem className="hidden md:flex">
-            <Popover
+            <Avatar
+              size="sm"
+              style={{
+                cursor: "pointer",
+              }}
+              isBordered
+              showFallback
+              name={store.userStore.userInfo.username}
+              color="secondary"
+              src={store.userStore.userInfo.photoURL}
+            />
+            {/* <Popover
               isOpen={isOpen}
               onOpenChange={(open) => {
                 setIsOpen(open);
@@ -178,7 +189,7 @@ export const Navbar = observer(() => {
                   </Listbox>
                 </div>
               </PopoverContent>
-            </Popover>
+            </Popover> */}
             {/* <Button
             // isExternal
             // as={Link}
