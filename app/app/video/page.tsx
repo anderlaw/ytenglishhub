@@ -62,8 +62,9 @@ const WordDivider = (props: { atBegin: boolean }) => {
     />
   );
 };
-const Main = ({ params }: { params: { id: string } }) => {
+const Main = () => {
   const searchParams = useSearchParams();
+  const video_id = searchParams.get('video_id');
   //计算DOM中视频容器的width后，存储起来方便其他元素参考排列：如 字典popup组件的错位排列
   const [videoWidth, setVideoWidth] = useState<number>(0);
 
@@ -163,7 +164,7 @@ const Main = ({ params }: { params: { id: string } }) => {
       const player = new window.YT.Player("player", {
         height: "360",
         width: "640",
-        videoId: params.id,
+        videoId: video_id,
         playerVars: {
           autoplay: 0,
           modestbranding: 1,
@@ -194,7 +195,7 @@ const Main = ({ params }: { params: { id: string } }) => {
         },
       });
     });
-  }, [params.id, searchParams]);
+  }, [video_id, searchParams]);
   //词典配置
   const [anchorElForDict, setAnchorElForDict] = useState<HTMLElement | null>(
     null
@@ -206,7 +207,7 @@ const Main = ({ params }: { params: { id: string } }) => {
   }, [dictData]);
   //字幕配置
   useEffect(() => {
-    getVideoInfo(params.id)
+    getVideoInfo(video_id!)
       .then((res) => {
         if (res.status === 200) {
           const automatic_captions = res.data.automatic_captions;
@@ -243,7 +244,7 @@ const Main = ({ params }: { params: { id: string } }) => {
       .finally(() => {
         // set_subs_loading_text("loaded");
       });
-  }, [params.id]);
+  }, [video_id]);
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     set_trans_sub_url(event.target.value);
