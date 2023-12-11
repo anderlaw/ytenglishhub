@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { LeftMenu } from "@/components/leftmenu";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -47,6 +48,16 @@ export default function RootLayout({
                 </Link>
               </footer> */}
         </Providers>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-PL54M8ZX9L" />
+        <Script id="google-analytics">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+ 
+          gtag('config', 'G-PL54M8ZX9L');
+        `}
+        </Script>
       </body>
     </html>
   );
