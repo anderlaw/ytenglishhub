@@ -32,7 +32,7 @@ axiosIns.interceptors.response.use(function (response: any) {
     console.log(error)
     if(error && error.response && error.response.status === 401){
         //用户授权token expires
-        location.href = `https://ytenglishhub.auth.us-east-1.amazoncognito.com/login?client_id=7id87glt4q3pl65c29ghqu3ff3&response_type=token&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fprepare`
+        location.href = process.env.NEXT_PUBLIC_singup_url as string
     }
     if (error.response.status != 200) {
         // store.logout()
