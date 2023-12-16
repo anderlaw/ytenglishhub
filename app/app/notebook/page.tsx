@@ -300,7 +300,7 @@ export default function Main() {
   const [selectValue, setSelectValue] = useState<string>("newest");
   return (
     <>
-      <Box className="flex justify-end pr-5 py-3">
+      <Box className="flex justify-end pr-5 py-3 items-center">
         <SelectComponent
           onSelectChange={(e) => {
             setSelectValue(e.target.value);
@@ -363,6 +363,7 @@ export default function Main() {
           curValue={selectValue}
         />
         <Button
+          size="small"
           variant="outlined"
           onClick={() => {
             setQuizDialogOpen(true);
