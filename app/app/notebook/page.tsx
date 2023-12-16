@@ -16,7 +16,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { use, useEffect, useState } from "react";
-import { queryNotebook } from "@/request/dictionary";
+import { queryNotebook, updateNotebookMastery } from "@/request/dictionary";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
@@ -206,9 +206,18 @@ const QuizCard = (props: {
             if (e.key === "Enter") {
               const typedText = e.target.value.trim().toLowerCase();
               const rightText = props.wordItem?.content.toLowerCase();
+              let finalMastery: number = props.wordItem?.mastery || 0;
+
               if (typedText === rightText) {
                 setResultColor("success");
                 playAudioByURL("/mp3/right.mp3");
+                //更新mastery
+                if (finalMastery + 20 > 100) {
+                  finalMastery = 100;
+                } else {
+                  finalMastery += 20;
+                }
+
                 //go to next word
                 setTimeout(() => {
                   //重置标记
@@ -219,7 +228,16 @@ const QuizCard = (props: {
               } else {
                 setResultColor("error");
                 playAudioByURL("/mp3/wrong.mp3");
+                //更新mastery
+                if (finalMastery - 20 < 0) {
+                  finalMastery = 0;
+                } else {
+                  finalMastery -= 20;
+                }
               }
+              //调用mastery更新接口
+              //add ! to the end of the string 因为在这里对象永远存在的
+              updateNotebookMastery(props.wordItem?.content!, finalMastery);
             } else {
               //重置标记
               setResultColor(undefined);

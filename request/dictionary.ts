@@ -30,3 +30,14 @@ export const deleteFromNotebook = (word:string) => {
         }
     })
 }
+
+export const updateNotebookMastery = (word:string,mastery:number) => {
+    return axiosIns({
+        url: "/notebook/update_word_mastery",
+        method: "PUT",
+        data: {
+            content: word,
+            mastery:mastery
+        }
+    })
+}
