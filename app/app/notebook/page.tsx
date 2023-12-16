@@ -4,7 +4,10 @@ import {
   Box,
   Button,
   CardHeader,
+  FormControl,
   IconButton,
+  MenuItem,
+  Select,
   TextField,
   Tooltip,
   Unstable_Grid2 as Grid,
@@ -21,6 +24,7 @@ import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import { playAudioByURL } from "@/utils";
+import { it } from "node:test";
 interface IWordItem {
   content: string;
   dict_object?: {
@@ -28,6 +32,8 @@ interface IWordItem {
     dict_data?: Array<any>;
   };
   mastery?: number;
+  create_at: number;
+  update_at: number;
 }
 //todo: utils function
 const makeRandomNumb: (max: number, count: number) => number[] = (
@@ -250,7 +256,32 @@ const QuizCard = (props: {
     </Card>
   );
 };
-
+const SelectComponent = (props: {
+  onSelectChange: (value: any) => void;
+  curValue: string;
+  menus: Array<{
+    label: string;
+    value: string;
+  }>;
+}) => {
+  const { curValue, menus, onSelectChange } = props;
+  return (
+    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+      <Select
+        labelId="demo-select-small-label"
+        id="demo-select-small"
+        value={curValue}
+        onChange={onSelectChange}
+      >
+        {menus.map((item) => (
+          <MenuItem key={item.value} value={item.value}>
+            {item.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
 export default function Main() {
   const [wordList, setWordList] = useState<IWordItem[]>([]);
   useEffect(() => {
@@ -266,9 +297,71 @@ export default function Main() {
   );
   const [currentWordItemIndex, setCurrentWordItemIndex] = useState<number>(0);
 
+  const [selectValue, setSelectValue] = useState<string>("newest");
   return (
     <>
       <Box className="flex justify-end pr-5 py-3">
+        <SelectComponent
+          onSelectChange={(e) => {
+            setSelectValue(e.target.value);
+            //sort
+            const sortByValue = e.target.value;
+            if (sortByValue === "newest") {
+              //时间降序排列
+              setWordList((prev) => {
+                const newState = Object.assign([], prev);
+                return newState.sort(
+                  (a: IWordItem, b: IWordItem) => b.create_at - a.create_at
+                );
+              });
+            } else if (sortByValue === "oldest") {
+              //时间升序
+              setWordList((prev) => {
+                const newState = Object.assign([], prev);
+                return newState.sort(
+                  (a: IWordItem, b: IWordItem) => a.create_at - b.create_at
+                );
+              });
+            } else if (sortByValue === "mastery-down") {
+              //掌握度降序
+              setWordList((prev) => {
+                const newState = Object.assign([], prev);
+                return newState.sort(
+                  (a: IWordItem, b: IWordItem) =>
+                    (b.mastery || 0) - (a.mastery || 0)
+                );
+              });
+            } else if (sortByValue === "mastery-up") {
+              //掌握度升序
+              setWordList((prev) => {
+                const newState = Object.assign([], prev);
+                return newState.sort(
+                  (a: IWordItem, b: IWordItem) =>
+                    (a.mastery || 0) - (b.mastery || 0)
+                );
+              });
+            }
+          }}
+          menus={[
+            {
+              label: "Newest",
+              value: "newest",
+            },
+            {
+              label: "Oldest",
+              value: "oldest",
+            },
+            {
+              label: "Mastery Down",
+              value: "mastery-down",
+            },
+            {
+              label: "Mastery Up",
+              value: "mastery-up",
+            },
+          ]}
+          curValue={selectValue}
+        />
         <Button
           variant="outlined"
           onClick={() => {
